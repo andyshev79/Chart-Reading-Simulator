@@ -23,7 +23,7 @@ const T = {
       skipGood:{t:"Good skip",e:"Signals conflicted (edge only {p}%). Correctly stayed out of a coin toss."},
       skipMiss:{t:"Missed chance",e:"There was a real edge ({p}%). Skipping cost you a good opportunity."},
       skipOk:{t:"Fair skip",e:"A modest edge ({p}%) — skipping is defensible."} },
-    round:"Round", continue:"Continue", showResult:"Show result", newSession:"New session",
+    round:"Round", continue:"Continue", showResult:"Show result", newSession:"New session", end:"End",
     sessionDone:"{n} rounds played", decisionQuality:"Decision quality", calibration:"Calibration", skips:"Skips", dynamics:"P&L dynamics",
     ranks:{ k1:"Novice", k2:"Chart reader", k3:"Analyst", k4:"Calibration master" } },
   ru: { title:"Тренажёр чтения графика", tagline:"Читайте сигналы. Оценивайте вероятность. Учитесь калибровке.",
@@ -44,7 +44,7 @@ const T = {
       skipGood:{t:"Правильный пропуск",e:"Сигналы конфликтовали (перевес лишь {p}%). Вы верно не полезли в мутный сигнал."},
       skipMiss:{t:"Упущено",e:"Был реальный перевес ({p}%). Пропуск стоил вам хорошей возможности."},
       skipOk:{t:"Допустимый пропуск",e:"Умеренный перевес ({p}%) — пропуск оправдан."} },
-    round:"Раунд", continue:"Продолжить", showResult:"Показать итог", newSession:"Новая сессия",
+    round:"Раунд", continue:"Продолжить", showResult:"Показать итог", newSession:"Новая сессия", end:"Завершить",
     sessionDone:"Сыграно раундов: {n}", decisionQuality:"Качество решений", calibration:"Калибровка", skips:"Пропусков", dynamics:"Динамика P&L",
     ranks:{ k1:"Новичок", k2:"Читатель графика", k3:"Аналитик", k4:"Мастер калибровки" } },
   ua: { title:"Тренажер читання графіка", tagline:"Читайте сигнали. Оцінюйте ймовірність. Вчіться калібрування.",
@@ -65,7 +65,7 @@ const T = {
       skipGood:{t:"Правильний пропуск",e:"Сигнали конфліктували (перевага лише {p}%). Ви вірно не полізли в каламутний сигнал."},
       skipMiss:{t:"Втрачено",e:"Була реальна перевага ({p}%). Пропуск коштував вам гарної можливості."},
       skipOk:{t:"Припустимий пропуск",e:"Помірна перевага ({p}%) — пропуск виправданий."} },
-    round:"Раунд", continue:"Продовжити", showResult:"Показати підсумок", newSession:"Нова сесія",
+    round:"Раунд", continue:"Продовжити", showResult:"Показати підсумок", newSession:"Нова сесія", end:"Завершити",
     sessionDone:"Зіграно раундів: {n}", decisionQuality:"Якість рішень", calibration:"Калібрування", skips:"Пропусків", dynamics:"Динаміка P&L",
     ranks:{ k1:"Новачок", k2:"Читач графіка", k3:"Аналітик", k4:"Майстер калібрування" } },
   uz: { title:"Grafik o'qish simulyatori", tagline:"Signallarni o'qing. Ehtimolni baholang. Kalibrlashni o'rganing.",
@@ -86,7 +86,7 @@ const T = {
       skipGood:{t:"To'g'ri o'tkazish",e:"Signallar qarama-qarshi edi (ustunlik faqat {p}%). To'g'ri o'tkazdingiz."},
       skipMiss:{t:"Imkoniyat boy berildi",e:"Haqiqiy ustunlik bor edi ({p}%). O'tkazish yaxshi imkoniyatga tushdi."},
       skipOk:{t:"Maqbul o'tkazish",e:"O'rtacha ustunlik ({p}%) — o'tkazish oqilona."} },
-    round:"Raund", continue:"Davom etish", showResult:"Natijani ko'rsatish", newSession:"Yangi sessiya",
+    round:"Raund", continue:"Davom etish", showResult:"Natijani ko'rsatish", newSession:"Yangi sessiya", end:"Yakunlash",
     sessionDone:"O'ynalgan raundlar: {n}", decisionQuality:"Qaror sifati", calibration:"Kalibrlash", skips:"O'tkazishlar", dynamics:"P&L dinamikasi",
     ranks:{ k1:"Yangi", k2:"Grafik o'quvchi", k3:"Tahlilchi", k4:"Kalibrlash ustasi" } },
 };
@@ -208,6 +208,9 @@ export default function ChartReadingSimulator() {
     setRoundNum((n) => n + 1);
     deal();
   }
+  function endSession() {
+    setPhase(sessionData.length > 0 ? "final" : "idle");
+  }
 
   function confirm() {
     if (!dir) return;
@@ -276,7 +279,10 @@ export default function ChartReadingSimulator() {
         <section className="board">
           <div className="board-head">
             <span className="chip-g" style={{color:G[group].hue,borderColor:G[group].hue+"66",background:G[group].hue+"14"}}>{L(G[group].name, lang)}</span>
-            <span className="board-status">{t.round} {roundNum}/{sessionLen}</span>
+            <span className="board-right">
+              <span className="board-status">{t.round} {roundNum}/{sessionLen}</span>
+              <button className="end-btn" onClick={endSession}>{t.end}</button>
+            </span>
           </div>
 
           {phase === "spinning" && (
@@ -475,6 +481,9 @@ const CSS = `
 .board-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
 .chip-g{font-size:11px;font-weight:700;border:1px solid;border-radius:20px;padding:5px 11px;}
 .board-status{font-size:11px;color:${C.mu};}
+.board-right{display:inline-flex;align-items:center;gap:10px;}
+.end-btn{font-size:11px;font-weight:700;color:${C.mu};background:none;border:1px solid ${C.ln};border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit;}
+.end-btn:hover{color:${C.tx};border-color:${C.mu};}
 .ribbons{display:flex;flex-direction:column;gap:11px;}
 .rb-row{display:flex;flex-direction:column;gap:5px;}
 .rb-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;}
