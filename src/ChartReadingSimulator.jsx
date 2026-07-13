@@ -9,26 +9,34 @@ const T = {
     based:"Chart signals · probability training", chooseGroup:"Choose instrument group",
     sessLen:"Session length", test:"Test", quick:"Quick", medium:"Medium", all:"All",
     start:"Show the chart signals", ex:"e.g.", reliability:"Reliability", moves:"Moves",
-    reading:"Reading the chart…", signalsOut:"Signals on the chart", again:"Deal again", next:"Next",
-    rowF:"Chart patterns", rowI:"Indicators & volume", rowC:"Candlestick patterns" },
+    reading:"Reading the chart…", signalsOut:"Signals on the chart", again:"Deal again",
+    rowF:"Chart patterns", rowI:"Indicators & volume", rowC:"Candlestick patterns",
+    yourDecision:"Your decision", up:"Up", down:"Down", skip:"Skip", strength:"Signal strength",
+    stake:"Stake", openTrade:"Open trade", skipTrade:"Skip this trade", weak:"coin toss", strong:"almost sure" },
   ru: { title:"Тренажёр чтения графика", tagline:"Читайте сигналы. Оценивайте вероятность. Учитесь калибровке.",
     based:"Сигналы графика · тренировка вероятности", chooseGroup:"Выберите группу инструментов",
     sessLen:"Длина сессии", test:"Тест", quick:"Быстрый", medium:"Средний", all:"Все",
     start:"Показать сигналы графика", ex:"напр.", reliability:"Надёжность", moves:"Движения",
-    reading:"Читаем график…", signalsOut:"Сигналы на графике", again:"Ещё раз", next:"Далее",
-    rowF:"Графические фигуры", rowI:"Индикаторы и объёмы", rowC:"Свечные комбинации" },
+    reading:"Читаем график…", signalsOut:"Сигналы на графике", again:"Ещё раз",
+    rowF:"Графические фигуры", rowI:"Индикаторы и объёмы", rowC:"Свечные комбинации",
+    yourDecision:"Ваше решение", up:"Вверх", down:"Вниз", skip:"Пропустить", strength:"Сила сигнала",
+    stake:"Ставка", openTrade:"Открыть сделку", skipTrade:"Пропустить сделку", weak:"случайность", strong:"почти точно" },
   ua: { title:"Тренажер читання графіка", tagline:"Читайте сигнали. Оцінюйте ймовірність. Вчіться калібрування.",
     based:"Сигнали графіка · тренування ймовірності", chooseGroup:"Оберіть групу інструментів",
     sessLen:"Довжина сесії", test:"Тест", quick:"Швидкий", medium:"Середній", all:"Усі",
     start:"Показати сигнали графіка", ex:"напр.", reliability:"Надійність", moves:"Рухи",
-    reading:"Читаємо графік…", signalsOut:"Сигнали на графіку", again:"Ще раз", next:"Далі",
-    rowF:"Графічні фігури", rowI:"Індикатори та об'єми", rowC:"Свічкові комбінації" },
+    reading:"Читаємо графік…", signalsOut:"Сигнали на графіку", again:"Ще раз",
+    rowF:"Графічні фігури", rowI:"Індикатори та об'єми", rowC:"Свічкові комбінації",
+    yourDecision:"Ваше рішення", up:"Вгору", down:"Вниз", skip:"Пропустити", strength:"Сила сигналу",
+    stake:"Ставка", openTrade:"Відкрити угоду", skipTrade:"Пропустити угоду", weak:"випадковість", strong:"майже точно" },
   uz: { title:"Grafik o'qish simulyatori", tagline:"Signallarni o'qing. Ehtimolni baholang. Kalibrlashni o'rganing.",
     based:"Grafik signallari · ehtimol mashqi", chooseGroup:"Asbob guruhini tanlang",
     sessLen:"Sessiya uzunligi", test:"Test", quick:"Tez", medium:"O'rta", all:"Hammasi",
     start:"Grafik signallarini ko'rsatish", ex:"masalan", reliability:"Ishonchlilik", moves:"Harakatlar",
-    reading:"Grafik o'qilyapti…", signalsOut:"Grafikdagi signallar", again:"Yana", next:"Keyingi",
-    rowF:"Grafik shakllar", rowI:"Indikatorlar va hajm", rowC:"Sham kombinatsiyalari" },
+    reading:"Grafik o'qilyapti…", signalsOut:"Grafikdagi signallar", again:"Yana",
+    rowF:"Grafik shakllar", rowI:"Indikatorlar va hajm", rowC:"Sham kombinatsiyalari",
+    yourDecision:"Sizning qaroringiz", up:"Yuqoriga", down:"Pastga", skip:"O'tkazish", strength:"Signal kuchi",
+    stake:"Tikish", openTrade:"Savdo ochish", skipTrade:"Savdoni o'tkazish", weak:"tasodif", strong:"deyarli aniq" },
 };
 const L = (o, lang) => (o && typeof o === "object" ? (o[lang] || o.ru || o.en) : o);
 const SESS = [ { k:"test", len:1 }, { k:"quick", len:5 }, { k:"medium", len:10 }, { k:"all", len:30 } ];
@@ -36,9 +44,9 @@ const RELI = { low:"★★★", trend:"★★", high:"★" };
 const MOVES = { low:"$", trend:"$$", high:"$$$" };
 const ROWS = ["F","I","C"];
 const rnd = (a) => a[Math.floor(Math.random()*a.length)];
+const STAKE = 1000;
 
-// ---- стилизованные иконки паттернов ----
-function PatternIcon({ icon, color, size=44 }) {
+function PatternIcon({ icon, color, size=42 }) {
   const s = { fill:"none", stroke:color, strokeWidth:2, strokeLinejoin:"round", strokeLinecap:"round" };
   const mu = "#5F6166";
   const cndl = (x,wt,wb,bt,bb,col,filled=true) => (
@@ -48,7 +56,6 @@ function PatternIcon({ icon, color, size=44 }) {
     </g>
   );
   const I = {
-    // фигуры
     headshoulders:<polyline points="2,26 9,19 13,22 19,10 24,6 29,10 35,22 39,19 46,26" {...s}/>,
     doubletop:<polyline points="3,25 11,7 17,16 23,7 31,25" {...s}/>,
     doublebottom:<polyline points="3,7 11,25 17,16 23,25 31,7" {...s}/>,
@@ -59,7 +66,6 @@ function PatternIcon({ icon, color, size=44 }) {
     pennant:<g><line x1="6" y1="30" x2="6" y2="13" {...s}/><line x1="6" y1="10" x2="24" y2="17" {...s}/><line x1="6" y1="24" x2="24" y2="17" {...s}/><line x1="24" y1="17" x2="32" y2="9" {...s}/></g>,
     wedge:<g><line x1="4" y1="26" x2="42" y2="9" {...s}/><line x1="4" y1="17" x2="42" y2="12" {...s}/></g>,
     cup:<g><path d="M4,7 Q24,36 44,7" {...s}/><line x1="44" y1="7" x2="47" y2="13" {...s}/></g>,
-    // индикаторы
     macross:<g><line x1="4" y1="9" x2="44" y2="23" stroke={color} strokeWidth="2"/><line x1="4" y1="21" x2="44" y2="13" stroke={mu} strokeWidth="2"/></g>,
     macrossup:<g><line x1="4" y1="23" x2="44" y2="9" stroke={color} strokeWidth="2"/><line x1="4" y1="15" x2="44" y2="21" stroke={mu} strokeWidth="2"/></g>,
     goldcross:<g><line x1="4" y1="25" x2="44" y2="7" stroke={color} strokeWidth="2.4"/><line x1="4" y1="14" x2="44" y2="20" stroke={mu} strokeWidth="2"/></g>,
@@ -70,7 +76,6 @@ function PatternIcon({ icon, color, size=44 }) {
     breaknovol:<g><polyline points="4,22 24,22 30,7" stroke={color} strokeWidth="2" fill="none" strokeDasharray="3 2"/><rect x="38" y="24" width="4" height="4" fill={mu}/></g>,
     bollinger:<g><line x1="4" y1="8" x2="44" y2="14" stroke={mu} strokeWidth="1.6"/><line x1="4" y1="24" x2="44" y2="18" stroke={mu} strokeWidth="1.6"/><polyline points="4,16 16,13 28,19 44,16" {...s}/></g>,
     bounce:<g><line x1="4" y1="25" x2="44" y2="25" stroke={mu} strokeWidth="1.6" strokeDasharray="3 2"/><polyline points="7,9 21,24 35,9" {...s}/></g>,
-    // свечи
     bullengulf:<g>{cndl(14,10,24,13,20,mu,false)}{cndl(30,4,28,8,24,color,true)}</g>,
     bearengulf:<g>{cndl(14,8,22,12,18,mu,true)}{cndl(30,4,28,8,24,color,false)}</g>,
     hammer:<g>{cndl(24,5,26,5,11,color,false)}</g>,
@@ -87,11 +92,13 @@ function PatternIcon({ icon, color, size=44 }) {
 
 export default function ChartReadingSimulator() {
   const [lang, setLang] = useState("ru");
-  const [phase, setPhase] = useState("idle"); // idle | spinning | landed
+  const [phase, setPhase] = useState("idle"); // idle | spinning | decide
   const [group, setGroup] = useState("trend");
   const [sessionLen, setSessionLen] = useState(5);
-  const [active, setActive] = useState(null); // {F,I,C} выпавшие сигналы
+  const [active, setActive] = useState(null);
   const [nonce, setNonce] = useState(0);
+  const [dir, setDir] = useState(null);      // up | down | skip
+  const [strength, setStrength] = useState(60);
   const t = T[lang];
   const G = DATA.groups;
 
@@ -102,11 +109,17 @@ export default function ChartReadingSimulator() {
   }, []);
 
   function deal() {
-    const picked = { F:rnd(byRow.F), I:rnd(byRow.I), C:rnd(byRow.C) };
-    setActive(picked);
+    setActive({ F:rnd(byRow.F), I:rnd(byRow.I), C:rnd(byRow.C) });
+    setDir(null); setStrength(60);
     setPhase("spinning");
     setNonce((n) => n + 1);
-    setTimeout(() => setPhase("landed"), 1900 + 500);
+    setTimeout(() => setPhase("decide"), 1900 + 500);
+  }
+
+  function confirm() {
+    if (!dir) return;
+    alert("Блок 4–5: расчёт вероятностей и результат — следующий шаг.\nВаш выбор: " +
+      (dir==="skip" ? t.skip : (dir==="up"?t.up:t.down) + " · " + strength + "%"));
   }
 
   return (
@@ -150,44 +163,80 @@ export default function ChartReadingSimulator() {
         </section>
       )}
 
-      {(phase === "spinning" || phase === "landed") && active && (
+      {(phase === "spinning" || phase === "decide") && active && (
         <section className="board">
           <div className="board-head">
             <span className="chip-g" style={{color:G[group].hue,borderColor:G[group].hue+"66",background:G[group].hue+"14"}}>{L(G[group].name, lang)}</span>
             <span className="board-status">{phase==="spinning" ? t.reading : t.signalsOut}</span>
           </div>
 
-          <div className="reels" key={nonce}>
-            {ROWS.map((r, i) => {
-              const hue = DATA.rows[r].hue;
-              const target = active[r];
-              const strip = phase==="spinning"
-                ? Array.from({length:11}, () => rnd(byRow[r])).concat(target)
-                : [target];
-              return (
-                <div className="reel-row" key={r}>
-                  <div className="reel-lbl" style={{color:hue}}>{L(DATA.rows[r].name, lang)}</div>
-                  <div className="reel-win">
-                    <div className={"reel-strip" + (phase==="spinning"?" spin":"")}
-                      style={phase==="spinning" ? { animationDelay:`${i*0.18}s`, ["--end"]:`-${11*74}px` } : {}}>
-                      {strip.map((sig, k) => (
-                        <div className="reel-cell" key={k} style={{borderColor: (phase==="landed"?hue:C.ln)}}>
-                          <div className="cell-ic"><PatternIcon icon={sig.icon} color={hue} /></div>
-                          {phase==="landed" && <div className="cell-nm">{L(sig.t, lang)}</div>}
-                        </div>
-                      ))}
+          {phase === "spinning" && (
+            <div className="ribbons" key={nonce}>
+              {ROWS.map((r, i) => {
+                const hue = DATA.rows[r].hue;
+                const strip = Array.from({length:11}, () => rnd(byRow[r])).concat(active[r]);
+                const cnt = strip.length;
+                return (
+                  <div className="rb-row" key={r}>
+                    <div className="rb-lbl" style={{color:hue}}>{L(DATA.rows[r].name, lang)}</div>
+                    <div className="rb-win">
+                      <div className="rb-strip spin"
+                        style={{ width:`${cnt*100}%`, animationDelay:`${i*0.18}s`, ["--end"]:`-${(cnt-1)/cnt*100}%` }}>
+                        {strip.map((sig, k) => (
+                          <div className="rb-cell" style={{width:`${100/cnt}%`, borderLeftColor:hue}} key={k}>
+                            <PatternIcon icon={sig.icon} color={hue} />
+                            <span className="rb-nm">{L(sig.t, lang)}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {phase === "landed" && (
-            <div className="board-actions">
-              <button className="cta" onClick={()=>alert("Блок 3: экран решения — следующий шаг")}>{t.next}</button>
-              <button className="cta ghost" onClick={deal}>{t.again}</button>
+                );
+              })}
             </div>
+          )}
+
+          {phase === "decide" && (
+            <>
+              <div className="cards">
+                {ROWS.map((r) => {
+                  const hue = DATA.rows[r].hue; const sig = active[r];
+                  return (
+                    <div className="scard" style={{borderLeftColor:hue}} key={r}>
+                      <div className="sc-ic"><PatternIcon icon={sig.icon} color={hue} /></div>
+                      <div className="sc-tx">
+                        <div className="sc-row" style={{color:hue}}>{L(DATA.rows[r].name, lang)}</div>
+                        <div className="sc-nm">{L(sig.t, lang)}</div>
+                        <div className="sc-d">{L(sig.d, lang)}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="dec">
+                <div className="eyebrow">{t.yourDecision}</div>
+                <div className="dirs">
+                  <button className={"dir" + (dir==="up"?" on up":"")} onClick={()=>setDir("up")}>↑ {t.up}</button>
+                  <button className={"dir" + (dir==="down"?" on dn":"")} onClick={()=>setDir("down")}>↓ {t.down}</button>
+                  <button className={"dir" + (dir==="skip"?" on sk":"")} onClick={()=>setDir("skip")}>{t.skip}</button>
+                </div>
+
+                {dir && dir!=="skip" && (
+                  <div className="str">
+                    <div className="str-lbl"><span>{t.strength}</span><span className="str-v">{strength}%</span></div>
+                    <input type="range" min="50" max="95" step="5" value={strength} onChange={(e)=>setStrength(+e.target.value)} />
+                    <div className="str-ends"><span>50% {t.weak}</span><span>95% {t.strong}</span></div>
+                  </div>
+                )}
+
+                <div className="stake">{t.stake}: <b>${STAKE.toLocaleString()}</b></div>
+                <button className="cta" disabled={!dir} style={!dir?{opacity:.5}:{}} onClick={confirm}>
+                  {dir==="skip" ? t.skipTrade : t.openTrade}
+                </button>
+                <button className="cta ghost" onClick={deal}>{t.again}</button>
+              </div>
+            </>
           )}
         </section>
       )}
@@ -222,20 +271,42 @@ const CSS = `
 .slen{font-size:11px;color:${C.mu};}
 .schip.on .slen{color:${C.ac};}
 .cta{width:100%;background:${C.ac};color:${C.bg};border:none;border-radius:12px;padding:15px;font-size:14.5px;font-weight:800;font-family:inherit;cursor:pointer;}
+.cta:disabled{cursor:default;}
 .cta.ghost{background:none;border:1px solid ${C.ln};color:${C.mu};margin-top:10px;}
 .board{padding:16px 16px 26px;}
 .board-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
 .chip-g{font-size:11px;font-weight:700;border:1px solid;border-radius:20px;padding:5px 11px;}
 .board-status{font-size:11px;color:${C.mu};}
-.reels{display:flex;flex-direction:column;gap:11px;}
-.reel-row{display:flex;flex-direction:column;gap:5px;}
-.reel-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;}
-.reel-win{height:74px;overflow:hidden;border:1px solid ${C.ln};border-radius:12px;background:${C.sf};}
-.reel-strip{display:flex;flex-direction:column;}
-.reel-strip.spin{animation:reelspin 1.9s cubic-bezier(.15,.7,.2,1) forwards;}
-@keyframes reelspin{from{transform:translateY(0);}to{transform:translateY(var(--end));}}
-.reel-cell{height:74px;display:flex;align-items:center;gap:12px;padding:0 14px;border-left:3px solid ${C.ln};box-sizing:border-box;}
-.cell-ic{flex:0 0 auto;width:44px;}
-.cell-nm{font-size:13.5px;font-weight:700;color:${C.tx};}
-.board-actions{margin-top:18px;}
+.ribbons{display:flex;flex-direction:column;gap:11px;}
+.rb-row{display:flex;flex-direction:column;gap:5px;}
+.rb-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;}
+.rb-win{overflow:hidden;border:1px solid ${C.ln};border-radius:12px;background:${C.sf};height:64px;}
+.rb-strip{display:flex;height:100%;}
+.rb-strip.spin{animation:rbspin 1.9s cubic-bezier(.15,.7,.2,1) forwards;}
+@keyframes rbspin{from{transform:translateX(0);}to{transform:translateX(var(--end));}}
+.rb-cell{flex:0 0 auto;height:100%;display:flex;align-items:center;gap:11px;padding:0 14px;border-left:3px solid ${C.ln};box-sizing:border-box;}
+.rb-nm{font-size:13px;font-weight:700;color:${C.tx};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cards{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.scard{display:flex;gap:12px;align-items:flex-start;background:${C.sf};border:1px solid ${C.ln};border-left:3px solid ${C.ln};border-radius:0 11px 11px 0;padding:11px 13px;}
+.sc-ic{flex:0 0 42px;margin-top:2px;}
+.sc-tx{flex:1;}
+.sc-row{font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:2px;}
+.sc-nm{font-size:14px;font-weight:800;color:${C.tx};margin-bottom:3px;}
+.sc-d{font-size:11.5px;line-height:1.4;color:${C.mu};}
+.dec{}
+.dirs{display:flex;gap:7px;margin-bottom:14px;}
+.dir{flex:1;text-align:center;font-size:13px;font-weight:800;color:${C.mu};background:${C.sf};border:1px solid ${C.ln};border-radius:10px;padding:12px 0;cursor:pointer;font-family:inherit;}
+.dir.on.up{color:${C.bg};background:${C.gn};border-color:${C.gn};}
+.dir.on.dn{color:${C.bg};background:${C.rd};border-color:${C.rd};}
+.dir.on.sk{color:${C.tx};background:${C.ln};border-color:${C.mu};}
+.str{margin-bottom:14px;}
+.str-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
+.str-lbl span:first-child{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:${C.mu};font-weight:700;}
+.str-v{font-size:20px;font-weight:800;color:${C.ac};}
+.str input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:${C.sf};outline:none;}
+.str input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:${C.ac};cursor:pointer;}
+.str input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-radius:50%;background:${C.ac};cursor:pointer;}
+.str-ends{display:flex;justify-content:space-between;font-size:9px;color:#5F5E5A;margin-top:5px;}
+.stake{text-align:center;font-size:12px;color:${C.mu};margin-bottom:14px;}
+.stake b{color:${C.tx};}
 `;
