@@ -279,10 +279,7 @@ export default function ChartReadingSimulator() {
         <section className="board">
           <div className="board-head">
             <span className="chip-g" style={{color:G[group].hue,borderColor:G[group].hue+"66",background:G[group].hue+"14"}}>{L(G[group].name, lang)}</span>
-            <span className="board-right">
-              <span className="board-status">{t.round} {roundNum}/{sessionLen}</span>
-              <button className="end-btn" onClick={endSession}>{t.end}</button>
-            </span>
+            <span className="board-status">{t.round} {roundNum}/{sessionLen}</span>
           </div>
 
           {phase === "spinning" && (
@@ -349,7 +346,7 @@ export default function ChartReadingSimulator() {
                 <button className="cta" disabled={!dir} style={!dir?{opacity:.5}:{}} onClick={confirm}>
                   {dir==="skip" ? t.skipTrade : t.openTrade}
                 </button>
-                <button className="cta ghost" onClick={deal}>{t.again}</button>
+                <button className="cta ghost" onClick={endSession}>{t.end}</button>
               </div>
             </>
           )}
@@ -400,6 +397,7 @@ export default function ChartReadingSimulator() {
               <button className="cta" onClick={nextRound}>
                 {roundNum >= sessionLen ? t.showResult : t.continue}
               </button>
+              {roundNum < sessionLen && <button className="cta ghost" onClick={endSession}>{t.end}</button>}
             </div>
           )}
         </section>
@@ -481,9 +479,6 @@ const CSS = `
 .board-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
 .chip-g{font-size:11px;font-weight:700;border:1px solid;border-radius:20px;padding:5px 11px;}
 .board-status{font-size:11px;color:${C.mu};}
-.board-right{display:inline-flex;align-items:center;gap:10px;}
-.end-btn{font-size:11px;font-weight:700;color:${C.mu};background:none;border:1px solid ${C.ln};border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit;}
-.end-btn:hover{color:${C.tx};border-color:${C.mu};}
 .ribbons{display:flex;flex-direction:column;gap:11px;}
 .rb-row{display:flex;flex-direction:column;gap:5px;}
 .rb-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;}
