@@ -5,10 +5,10 @@ const C = { bg:"#0A0A0B", sf:"#161719", ln:"#2A2D31", ac:"#FF5A2C", bl:"#4C7DF0"
   vt:"#B57BFF", gn:"#22C55E", rd:"#E24B4A", tx:"#F4F5F7", mu:"#8B9096" };
 
 const T = {
-  en: { title:"Chart Reading Simulator", tagline:"Read the signals. Assess the odds. Learn calibration.",
+  en: { title:"Chart Reading Simulator", tagline:"Read the signals. Assess the probability of a signal firing and the risk.",
     based:"Chart signals · probability training", chooseGroup:"Choose instrument group",
     sessLen:"Session length", test:"Test", quick:"Quick", medium:"Medium", all:"All",
-    start:"Show the chart signals", ex:"e.g.", reliability:"Reliability", moves:"Moves",
+    start:"Show the chart signals", ex:"e.g.", reliability:"Signal reliability", moves:"Instrument move", moveWords:{low:"limited",trend:"moderate",high:"strong"},
     reading:"Reading the chart…", signalsOut:"Signals on the chart", again:"Deal again",
     rowF:"Chart patterns", rowI:"Indicators & volume", rowC:"Candlestick patterns",
     yourDecision:"Your decision", up:"Up", down:"Down", skip:"Skip", strength:"Signal strength",
@@ -26,10 +26,10 @@ const T = {
     round:"Round", continue:"Continue", showResult:"Show result", newSession:"New session", end:"End",
     sessionDone:"{n} rounds played", decisionQuality:"Decision quality", calibration:"Calibration", skips:"Skips", dynamics:"P&L dynamics",
     ranks:{ k1:"Novice", k2:"Chart reader", k3:"Analyst", k4:"Calibration master" } },
-  ru: { title:"Тренажёр чтения графика", tagline:"Читайте сигналы. Оценивайте вероятность. Учитесь калибровке.",
+  ru: { title:"Тренажёр чтения графика", tagline:"Читайте сигналы. Оценивайте вероятность срабатывания сигнала и риск.",
     based:"Сигналы графика · тренировка вероятности", chooseGroup:"Выберите группу инструментов",
     sessLen:"Длина сессии", test:"Тест", quick:"Быстрый", medium:"Средний", all:"Все",
-    start:"Показать сигналы графика", ex:"напр.", reliability:"Надёжность", moves:"Движения",
+    start:"Показать сигналы графика", ex:"напр.", reliability:"Надёжность сигнала", moves:"Движение инструмента", moveWords:{low:"ограниченные",trend:"умеренные",high:"сильные"},
     reading:"Читаем график…", signalsOut:"Сигналы на графике", again:"Ещё раз",
     rowF:"Графические фигуры", rowI:"Индикаторы и объёмы", rowC:"Свечные комбинации",
     yourDecision:"Ваше решение", up:"Вверх", down:"Вниз", skip:"Пропустить", strength:"Сила сигнала",
@@ -47,10 +47,10 @@ const T = {
     round:"Раунд", continue:"Продолжить", showResult:"Показать итог", newSession:"Новая сессия", end:"Завершить",
     sessionDone:"Сыграно раундов: {n}", decisionQuality:"Качество решений", calibration:"Калибровка", skips:"Пропусков", dynamics:"Динамика P&L",
     ranks:{ k1:"Новичок", k2:"Читатель графика", k3:"Аналитик", k4:"Мастер калибровки" } },
-  ua: { title:"Тренажер читання графіка", tagline:"Читайте сигнали. Оцінюйте ймовірність. Вчіться калібрування.",
+  ua: { title:"Тренажер читання графіка", tagline:"Читайте сигнали. Оцінюйте ймовірність спрацювання сигналу та ризик.",
     based:"Сигнали графіка · тренування ймовірності", chooseGroup:"Оберіть групу інструментів",
     sessLen:"Довжина сесії", test:"Тест", quick:"Швидкий", medium:"Середній", all:"Усі",
-    start:"Показати сигнали графіка", ex:"напр.", reliability:"Надійність", moves:"Рухи",
+    start:"Показати сигнали графіка", ex:"напр.", reliability:"Надійність сигналу", moves:"Рух інструменту", moveWords:{low:"обмежені",trend:"помірні",high:"сильні"},
     reading:"Читаємо графік…", signalsOut:"Сигнали на графіку", again:"Ще раз",
     rowF:"Графічні фігури", rowI:"Індикатори та об'єми", rowC:"Свічкові комбінації",
     yourDecision:"Ваше рішення", up:"Вгору", down:"Вниз", skip:"Пропустити", strength:"Сила сигналу",
@@ -68,10 +68,10 @@ const T = {
     round:"Раунд", continue:"Продовжити", showResult:"Показати підсумок", newSession:"Нова сесія", end:"Завершити",
     sessionDone:"Зіграно раундів: {n}", decisionQuality:"Якість рішень", calibration:"Калібрування", skips:"Пропусків", dynamics:"Динаміка P&L",
     ranks:{ k1:"Новачок", k2:"Читач графіка", k3:"Аналітик", k4:"Майстер калібрування" } },
-  uz: { title:"Grafik o'qish simulyatori", tagline:"Signallarni o'qing. Ehtimolni baholang. Kalibrlashni o'rganing.",
+  uz: { title:"Grafik o'qish simulyatori", tagline:"Signallarni o'qing. Signal ishlashi ehtimoli va xavfni baholang.",
     based:"Grafik signallari · ehtimol mashqi", chooseGroup:"Asbob guruhini tanlang",
     sessLen:"Sessiya uzunligi", test:"Test", quick:"Tez", medium:"O'rta", all:"Hammasi",
-    start:"Grafik signallarini ko'rsatish", ex:"masalan", reliability:"Ishonchlilik", moves:"Harakatlar",
+    start:"Grafik signallarini ko'rsatish", ex:"masalan", reliability:"Signal ishonchliligi", moves:"Asbob harakati", moveWords:{low:"cheklangan",trend:"o'rtacha",high:"kuchli"},
     reading:"Grafik o'qilyapti…", signalsOut:"Grafikdagi signallar", again:"Yana",
     rowF:"Grafik shakllar", rowI:"Indikatorlar va hajm", rowC:"Sham kombinatsiyalari",
     yourDecision:"Sizning qaroringiz", up:"Yuqoriga", down:"Pastga", skip:"O'tkazish", strength:"Signal kuchi",
@@ -259,7 +259,7 @@ export default function ChartReadingSimulator() {
                 <div className="gtop"><span className="gname">{L(g.name, lang)}</span>
                   <span className="grad" style={group===id?{borderColor:g.hue,background:`radial-gradient(circle,${g.hue} 0 38%,transparent 42%)`}:{}} /></div>
                 <div className="gex">{t.ex}: {L(g.ex, lang)}</div>
-                <div className="gmeta"><span style={{color:g.hue}}>{t.reliability}: {RELI[id]}</span><span className="gmu">{t.moves}: {MOVES[id]}</span></div>
+                <div className="gmeta"><span style={{color:g.hue}}>{t.reliability}: {RELI[id]}</span><span className="gmu">{t.moves}: {t.moveWords[id]}</span></div>
               </button>
             ))}
           </div>
