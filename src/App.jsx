@@ -1,1 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0A0A0B"/><polyline points="5,22 12,14 17,18 27,7" fill="none" stroke="#FF5A2C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
