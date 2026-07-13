@@ -12,7 +12,17 @@ const T = {
     reading:"Reading the chart…", signalsOut:"Signals on the chart", again:"Deal again",
     rowF:"Chart patterns", rowI:"Indicators & volume", rowC:"Candlestick patterns",
     yourDecision:"Your decision", up:"Up", down:"Down", skip:"Skip", strength:"Signal strength",
-    stake:"Stake", openTrade:"Open trade", skipTrade:"Skip this trade", weak:"coin toss", strong:"almost sure" },
+    stake:"Stake", openTrade:"Open trade", skipTrade:"Skip this trade", weak:"coin toss", strong:"almost sure",
+    yourChoice:"Your call", market:"Market", combined:"Combined probability", trueProb:"true prob",
+    howWorks:"What came out and how it works", calib:"Your estimate", vsReal:"real",
+    verd:{ right:{t:"Correct decision",e:"Profit on a high-probability setup ({p}%). Good risk/reward — this is how capital grows."},
+      lucky:{t:"Lucky",e:"You profited, but your direction's real probability was only {p}%. Poor risk/reward — over time such trades drain the account."},
+      unlucky:{t:"Right call, unlucky",e:"You lost, but the setup was in your favor ({p}%). A correct decision with a bad outcome — this is acceptable."},
+      mistake:{t:"Mistake",e:"Loss on a low-probability bet ({p}%). Both the decision and the outcome were poor."},
+      fair:{t:"Borderline",e:"The setup was close to 50/50 ({p}%) — a marginal call either way."},
+      skipGood:{t:"Good skip",e:"Signals conflicted (edge only {p}%). Correctly stayed out of a coin toss."},
+      skipMiss:{t:"Missed chance",e:"There was a real edge ({p}%). Skipping cost you a good opportunity."},
+      skipOk:{t:"Fair skip",e:"A modest edge ({p}%) — skipping is defensible."} } },
   ru: { title:"Тренажёр чтения графика", tagline:"Читайте сигналы. Оценивайте вероятность. Учитесь калибровке.",
     based:"Сигналы графика · тренировка вероятности", chooseGroup:"Выберите группу инструментов",
     sessLen:"Длина сессии", test:"Тест", quick:"Быстрый", medium:"Средний", all:"Все",
@@ -20,7 +30,17 @@ const T = {
     reading:"Читаем график…", signalsOut:"Сигналы на графике", again:"Ещё раз",
     rowF:"Графические фигуры", rowI:"Индикаторы и объёмы", rowC:"Свечные комбинации",
     yourDecision:"Ваше решение", up:"Вверх", down:"Вниз", skip:"Пропустить", strength:"Сила сигнала",
-    stake:"Ставка", openTrade:"Открыть сделку", skipTrade:"Пропустить сделку", weak:"случайность", strong:"почти точно" },
+    stake:"Ставка", openTrade:"Открыть сделку", skipTrade:"Пропустить сделку", weak:"случайность", strong:"почти точно",
+    yourChoice:"Ваш выбор", market:"Рынок", combined:"Общая вероятность", trueProb:"реальная",
+    howWorks:"Что выпало и как это работает", calib:"Ваша оценка", vsReal:"реально",
+    verd:{ right:{t:"Правильное решение",e:"Прибыль на сигнале с высокой вероятностью ({p}%). Хороший risk/reward — так и растёт капитал."},
+      lucky:{t:"Повезло",e:"Вы заработали, но реальная вероятность вашего направления была лишь {p}%. Плохой risk/reward — на дистанции такие сделки съедают депозит."},
+      unlucky:{t:"Верное решение, не повезло",e:"Вы потеряли, но расклад был в вашу пользу ({p}%). Правильное решение с плохим исходом — это приемлемо."},
+      mistake:{t:"Ошибка",e:"Убыток на ставке с низкой вероятностью ({p}%). И решение, и исход были плохими."},
+      fair:{t:"Пограничный случай",e:"Расклад был близок к 50/50 ({p}%) — спорный выбор в любую сторону."},
+      skipGood:{t:"Правильный пропуск",e:"Сигналы конфликтовали (перевес лишь {p}%). Вы верно не полезли в мутный сигнал."},
+      skipMiss:{t:"Упущено",e:"Был реальный перевес ({p}%). Пропуск стоил вам хорошей возможности."},
+      skipOk:{t:"Допустимый пропуск",e:"Умеренный перевес ({p}%) — пропуск оправдан."} } },
   ua: { title:"Тренажер читання графіка", tagline:"Читайте сигнали. Оцінюйте ймовірність. Вчіться калібрування.",
     based:"Сигнали графіка · тренування ймовірності", chooseGroup:"Оберіть групу інструментів",
     sessLen:"Довжина сесії", test:"Тест", quick:"Швидкий", medium:"Середній", all:"Усі",
@@ -28,7 +48,17 @@ const T = {
     reading:"Читаємо графік…", signalsOut:"Сигнали на графіку", again:"Ще раз",
     rowF:"Графічні фігури", rowI:"Індикатори та об'єми", rowC:"Свічкові комбінації",
     yourDecision:"Ваше рішення", up:"Вгору", down:"Вниз", skip:"Пропустити", strength:"Сила сигналу",
-    stake:"Ставка", openTrade:"Відкрити угоду", skipTrade:"Пропустити угоду", weak:"випадковість", strong:"майже точно" },
+    stake:"Ставка", openTrade:"Відкрити угоду", skipTrade:"Пропустити угоду", weak:"випадковість", strong:"майже точно",
+    yourChoice:"Ваш вибір", market:"Ринок", combined:"Загальна ймовірність", trueProb:"реальна",
+    howWorks:"Що випало і як це працює", calib:"Ваша оцінка", vsReal:"реально",
+    verd:{ right:{t:"Правильне рішення",e:"Прибуток на сигналі з високою ймовірністю ({p}%). Добрий risk/reward — так і росте капітал."},
+      lucky:{t:"Пощастило",e:"Ви заробили, але реальна ймовірність вашого напряму була лише {p}%. Поганий risk/reward — на дистанції такі угоди з'їдають депозит."},
+      unlucky:{t:"Вірне рішення, не пощастило",e:"Ви втратили, але розклад був на вашу користь ({p}%). Правильне рішення з поганим результатом — це прийнятно."},
+      mistake:{t:"Помилка",e:"Збиток на ставці з низькою ймовірністю ({p}%). І рішення, і результат були поганими."},
+      fair:{t:"Межовий випадок",e:"Розклад був близький до 50/50 ({p}%) — спірний вибір у будь-який бік."},
+      skipGood:{t:"Правильний пропуск",e:"Сигнали конфліктували (перевага лише {p}%). Ви вірно не полізли в каламутний сигнал."},
+      skipMiss:{t:"Втрачено",e:"Була реальна перевага ({p}%). Пропуск коштував вам гарної можливості."},
+      skipOk:{t:"Припустимий пропуск",e:"Помірна перевага ({p}%) — пропуск виправданий."} } },
   uz: { title:"Grafik o'qish simulyatori", tagline:"Signallarni o'qing. Ehtimolni baholang. Kalibrlashni o'rganing.",
     based:"Grafik signallari · ehtimol mashqi", chooseGroup:"Asbob guruhini tanlang",
     sessLen:"Sessiya uzunligi", test:"Test", quick:"Tez", medium:"O'rta", all:"Hammasi",
@@ -36,7 +66,17 @@ const T = {
     reading:"Grafik o'qilyapti…", signalsOut:"Grafikdagi signallar", again:"Yana",
     rowF:"Grafik shakllar", rowI:"Indikatorlar va hajm", rowC:"Sham kombinatsiyalari",
     yourDecision:"Sizning qaroringiz", up:"Yuqoriga", down:"Pastga", skip:"O'tkazish", strength:"Signal kuchi",
-    stake:"Tikish", openTrade:"Savdo ochish", skipTrade:"Savdoni o'tkazish", weak:"tasodif", strong:"deyarli aniq" },
+    stake:"Tikish", openTrade:"Savdo ochish", skipTrade:"Savdoni o'tkazish", weak:"tasodif", strong:"deyarli aniq",
+    yourChoice:"Sizning tanlovingiz", market:"Bozor", combined:"Umumiy ehtimol", trueProb:"haqiqiy",
+    howWorks:"Nima chiqdi va qanday ishlaydi", calib:"Sizning bahoyingiz", vsReal:"haqiqatda",
+    verd:{ right:{t:"To'g'ri qaror",e:"Yuqori ehtimolli signalda foyda ({p}%). Yaxshi risk/reward — kapital shunday o'sadi."},
+      lucky:{t:"Omad keldi",e:"Foyda oldingiz, lekin yo'nalishingizning haqiqiy ehtimoli faqat {p}% edi. Yomon risk/reward."},
+      unlucky:{t:"To'g'ri qaror, omad kelmadi",e:"Yo'qotdingiz, lekin vaziyat foydangizga edi ({p}%). To'g'ri qaror, yomon natija — bu maqbul."},
+      mistake:{t:"Xato",e:"Past ehtimolli tikishda zarar ({p}%). Ham qaror, ham natija yomon edi."},
+      fair:{t:"Chegaraviy holat",e:"Vaziyat 50/50 ga yaqin edi ({p}%) — har ikki tomon uchun bahsli."},
+      skipGood:{t:"To'g'ri o'tkazish",e:"Signallar qarama-qarshi edi (ustunlik faqat {p}%). To'g'ri o'tkazdingiz."},
+      skipMiss:{t:"Imkoniyat boy berildi",e:"Haqiqiy ustunlik bor edi ({p}%). O'tkazish yaxshi imkoniyatga tushdi."},
+      skipOk:{t:"Maqbul o'tkazish",e:"O'rtacha ustunlik ({p}%) — o'tkazish oqilona."} } },
 };
 const L = (o, lang) => (o && typeof o === "object" ? (o[lang] || o.ru || o.en) : o);
 const SESS = [ { k:"test", len:1 }, { k:"quick", len:5 }, { k:"medium", len:10 }, { k:"all", len:30 } ];
@@ -45,6 +85,31 @@ const MOVES = { low:"$", trend:"$$", high:"$$$" };
 const ROWS = ["F","I","C"];
 const rnd = (a) => a[Math.floor(Math.random()*a.length)];
 const STAKE = 1000;
+const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+
+// вероятность отработки сигнала в его сторону, с поправкой на группу
+const adjProb = (sig, group) => sig.dir === "neutral" ? 50 : clamp(sig.base + DATA.groupMod[group], 35, 92);
+// приведение к вероятности движения ВВЕРХ
+const pUpOf = (sig, group) => {
+  const a = adjProb(sig, group);
+  return sig.dir === "up" ? a : sig.dir === "down" ? 100 - a : 50;
+};
+// комбинирование 3 сигналов: согласованные усиливают, конфликтующие тянут к 50
+function combineUp(sigs, group) {
+  const raw = sigs.reduce((s, x) => s + (pUpOf(x, group) - 50), 0);
+  return clamp(Math.round(50 + raw * 0.7), 5, 95);
+}
+function verdictOf(dir, pnl, pDir, edge) {
+  if (dir === "skip") return edge <= 58 ? "skipGood" : edge >= 65 ? "skipMiss" : "skipOk";
+  const profit = pnl > 0;
+  if (profit && pDir >= 58) return "right";
+  if (profit && pDir < 45) return "lucky";
+  if (!profit && pDir >= 58) return "unlucky";
+  if (!profit && pDir < 45) return "mistake";
+  return "fair";
+}
+const VCOL = { right:"#22C55E", lucky:"#EAB308", unlucky:"#4C7DF0", mistake:"#E24B4A", fair:"#8B9096",
+  skipGood:"#22C55E", skipMiss:"#EAB308", skipOk:"#8B9096" };
 
 function PatternIcon({ icon, color, size=42 }) {
   const s = { fill:"none", stroke:color, strokeWidth:2, strokeLinejoin:"round", strokeLinecap:"round" };
@@ -99,6 +164,7 @@ export default function ChartReadingSimulator() {
   const [nonce, setNonce] = useState(0);
   const [dir, setDir] = useState(null);      // up | down | skip
   const [strength, setStrength] = useState(60);
+  const [result, setResult] = useState(null);
   const t = T[lang];
   const G = DATA.groups;
 
@@ -118,8 +184,23 @@ export default function ChartReadingSimulator() {
 
   function confirm() {
     if (!dir) return;
-    alert("Блок 4–5: расчёт вероятностей и результат — следующий шаг.\nВаш выбор: " +
-      (dir==="skip" ? t.skip : (dir==="up"?t.up:t.down) + " · " + strength + "%"));
+    const sigs = ROWS.map((r) => active[r]);
+    const pUp = combineUp(sigs, group);
+    const pDown = 100 - pUp;
+    const up = Math.random() * 100 < pUp;                       // истинный исход
+    const amp = G[group].vol * 4 * (0.7 + Math.random() * 0.6); // амплитуда, %
+    const move = +((up ? 1 : -1) * amp).toFixed(1);
+    let pnl = 0, pDir = 50;
+    if (dir !== "skip") {
+      pnl = Math.round((dir === "up" ? 1 : -1) * STAKE * (move / 100));
+      pDir = dir === "up" ? pUp : pDown;
+    }
+    const edge = Math.max(pUp, pDown);
+    const vk = verdictOf(dir, pnl, pDir, edge);
+    const probForText = dir === "skip" ? edge : pDir;
+    setResult({ pUp, pDown, up, move, pnl, pDir, edge, vk, probForText,
+      sigs: sigs.map((x) => ({ id:x.id, row:x.row, dir:x.dir, p:adjProb(x, group), pUp:pUpOf(x, group), t:x.t, d:x.d, icon:x.icon })) });
+    setPhase("result");
   }
 
   return (
@@ -163,7 +244,7 @@ export default function ChartReadingSimulator() {
         </section>
       )}
 
-      {(phase === "spinning" || phase === "decide") && active && (
+      {(phase === "spinning" || phase === "decide" || phase === "result") && active && (
         <section className="board">
           <div className="board-head">
             <span className="chip-g" style={{color:G[group].hue,borderColor:G[group].hue+"66",background:G[group].hue+"14"}}>{L(G[group].name, lang)}</span>
@@ -238,6 +319,53 @@ export default function ChartReadingSimulator() {
               </div>
             </>
           )}
+          {phase === "result" && result && (
+            <div className="res">
+              <div className="res-top">
+                <div className="res-choice">
+                  {t.yourChoice}: <b style={{color: dir==="up"?C.gn:dir==="down"?C.rd:C.mu}}>
+                    {dir==="skip" ? t.skip : (dir==="up"?("↑ "+t.up):("↓ "+t.down)) + " · " + strength + "%"}
+                  </b>
+                  {" · "}{t.market}: <b style={{color: result.up?C.gn:C.rd}}>{result.up?"↑":"↓"} {result.move>0?"+":""}{result.move}%</b>
+                </div>
+                {dir!=="skip" && <div className={"res-pnl " + (result.pnl>=0?"up":"dn")}>{result.pnl>=0?"+":"−"}${Math.abs(result.pnl)}</div>}
+              </div>
+
+              <div className="verd" style={{borderColor:VCOL[result.vk]+"66", background:VCOL[result.vk]+"14"}}>
+                <div className="verd-t" style={{color:VCOL[result.vk]}}>{t.verd[result.vk].t}</div>
+                <div className="verd-e">{t.verd[result.vk].e.replace("{p}", result.probForText)}</div>
+              </div>
+
+              <div className="eyebrow">{t.howWorks}</div>
+              <div className="cards">
+                {result.sigs.map((sg) => {
+                  const hue = DATA.rows[sg.row].hue;
+                  const arrow = sg.dir==="up" ? "↑" : sg.dir==="down" ? "↓" : "≈";
+                  const acol = sg.dir==="up" ? C.gn : sg.dir==="down" ? C.rd : C.mu;
+                  return (
+                    <div className="scard" style={{borderLeftColor:hue}} key={sg.id}>
+                      <div className="sc-ic"><PatternIcon icon={sg.icon} color={hue} /></div>
+                      <div className="sc-tx">
+                        <div className="sc-head"><span className="sc-nm">{L(sg.t, lang)}</span><span className="sc-p" style={{color:acol}}>{arrow} {sg.p}%</span></div>
+                        <div className="sc-d">{L(sg.d, lang)}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="combo">
+                <div className="combo-h"><span>{t.combined} ↑</span><span className="combo-v">{result.pUp}%</span></div>
+                <div className="combo-bar"><span style={{width:result.pUp+"%",background:C.gn}} /><span style={{width:result.pDown+"%",background:C.rd}} /></div>
+                <div className="combo-ends"><span style={{color:C.gn}}>↑ {result.pUp}%</span><span style={{color:C.rd}}>↓ {result.pDown}%</span></div>
+                {dir!=="skip" && (
+                  <div className="combo-note">{t.calib}: {strength}% · {t.vsReal}: {result.pDir}%</div>
+                )}
+              </div>
+
+              <button className="cta" onClick={deal}>{t.again}</button>
+            </div>
+          )}
         </section>
       )}
     </div>
@@ -309,4 +437,19 @@ const CSS = `
 .str-ends{display:flex;justify-content:space-between;font-size:9px;color:#5F5E5A;margin-top:5px;}
 .stake{text-align:center;font-size:12px;color:${C.mu};margin-bottom:14px;}
 .stake b{color:${C.tx};}
+.res-top{text-align:center;margin-bottom:14px;}
+.res-choice{font-size:11.5px;color:${C.mu};line-height:1.5;margin-bottom:4px;}
+.res-pnl{font-size:26px;font-weight:800;}
+.res-pnl.up{color:${C.gn};} .res-pnl.dn{color:${C.rd};}
+.verd{border:1px solid;border-radius:12px;padding:12px 13px;margin-bottom:16px;}
+.verd-t{font-size:14px;font-weight:800;margin-bottom:4px;}
+.verd-e{font-size:11.5px;line-height:1.5;color:#B8BCC2;}
+.sc-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px;}
+.sc-p{font-size:12px;font-weight:800;white-space:nowrap;}
+.combo{background:#0F0E0D;border:1px solid ${C.ln};border-radius:12px;padding:13px;margin-bottom:16px;}
+.combo-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;font-size:11px;color:${C.mu};}
+.combo-v{font-size:20px;font-weight:800;color:${C.tx};}
+.combo-bar{height:8px;border-radius:5px;overflow:hidden;display:flex;background:${C.sf};}
+.combo-ends{display:flex;justify-content:space-between;font-size:10px;font-weight:700;margin-top:6px;}
+.combo-note{font-size:10.5px;color:${C.mu};margin-top:10px;padding-top:9px;border-top:1px solid ${C.ln};text-align:center;}
 `;
