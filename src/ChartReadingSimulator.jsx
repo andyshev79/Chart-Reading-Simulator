@@ -22,7 +22,10 @@ const T = {
       fair:{t:"Borderline",e:"The setup was close to 50/50 ({p}%) — a marginal call either way."},
       skipGood:{t:"Good skip",e:"Signals conflicted (edge only {p}%). Correctly stayed out of a coin toss."},
       skipMiss:{t:"Missed chance",e:"There was a real edge ({p}%). Skipping cost you a good opportunity."},
-      skipOk:{t:"Fair skip",e:"A modest edge ({p}%) — skipping is defensible."} } },
+      skipOk:{t:"Fair skip",e:"A modest edge ({p}%) — skipping is defensible."} },
+    round:"Round", continue:"Continue", showResult:"Show result", newSession:"New session", end:"End",
+    sessionDone:"{n} rounds played", decisionQuality:"Decision quality", calibration:"Calibration", skips:"Skips", dynamics:"P&L dynamics",
+    ranks:{ k1:"Novice", k2:"Chart reader", k3:"Analyst", k4:"Calibration master" } },
   ru: { title:"Тренажёр чтения графика", tagline:"Читайте сигналы. Оценивайте вероятность. Учитесь калибровке.",
     based:"Сигналы графика · тренировка вероятности", chooseGroup:"Выберите группу инструментов",
     sessLen:"Длина сессии", test:"Тест", quick:"Быстрый", medium:"Средний", all:"Все",
@@ -40,7 +43,10 @@ const T = {
       fair:{t:"Пограничный случай",e:"Расклад был близок к 50/50 ({p}%) — спорный выбор в любую сторону."},
       skipGood:{t:"Правильный пропуск",e:"Сигналы конфликтовали (перевес лишь {p}%). Вы верно не полезли в мутный сигнал."},
       skipMiss:{t:"Упущено",e:"Был реальный перевес ({p}%). Пропуск стоил вам хорошей возможности."},
-      skipOk:{t:"Допустимый пропуск",e:"Умеренный перевес ({p}%) — пропуск оправдан."} } },
+      skipOk:{t:"Допустимый пропуск",e:"Умеренный перевес ({p}%) — пропуск оправдан."} },
+    round:"Раунд", continue:"Продолжить", showResult:"Показать итог", newSession:"Новая сессия", end:"Завершить",
+    sessionDone:"Сыграно раундов: {n}", decisionQuality:"Качество решений", calibration:"Калибровка", skips:"Пропусков", dynamics:"Динамика P&L",
+    ranks:{ k1:"Новичок", k2:"Читатель графика", k3:"Аналитик", k4:"Мастер калибровки" } },
   ua: { title:"Тренажер читання графіка", tagline:"Читайте сигнали. Оцінюйте ймовірність. Вчіться калібрування.",
     based:"Сигнали графіка · тренування ймовірності", chooseGroup:"Оберіть групу інструментів",
     sessLen:"Довжина сесії", test:"Тест", quick:"Швидкий", medium:"Середній", all:"Усі",
@@ -58,7 +64,10 @@ const T = {
       fair:{t:"Межовий випадок",e:"Розклад був близький до 50/50 ({p}%) — спірний вибір у будь-який бік."},
       skipGood:{t:"Правильний пропуск",e:"Сигнали конфліктували (перевага лише {p}%). Ви вірно не полізли в каламутний сигнал."},
       skipMiss:{t:"Втрачено",e:"Була реальна перевага ({p}%). Пропуск коштував вам гарної можливості."},
-      skipOk:{t:"Припустимий пропуск",e:"Помірна перевага ({p}%) — пропуск виправданий."} } },
+      skipOk:{t:"Припустимий пропуск",e:"Помірна перевага ({p}%) — пропуск виправданий."} },
+    round:"Раунд", continue:"Продовжити", showResult:"Показати підсумок", newSession:"Нова сесія", end:"Завершити",
+    sessionDone:"Зіграно раундів: {n}", decisionQuality:"Якість рішень", calibration:"Калібрування", skips:"Пропусків", dynamics:"Динаміка P&L",
+    ranks:{ k1:"Новачок", k2:"Читач графіка", k3:"Аналітик", k4:"Майстер калібрування" } },
   uz: { title:"Grafik o'qish simulyatori", tagline:"Signallarni o'qing. Ehtimolni baholang. Kalibrlashni o'rganing.",
     based:"Grafik signallari · ehtimol mashqi", chooseGroup:"Asbob guruhini tanlang",
     sessLen:"Sessiya uzunligi", test:"Test", quick:"Tez", medium:"O'rta", all:"Hammasi",
@@ -76,7 +85,10 @@ const T = {
       fair:{t:"Chegaraviy holat",e:"Vaziyat 50/50 ga yaqin edi ({p}%) — har ikki tomon uchun bahsli."},
       skipGood:{t:"To'g'ri o'tkazish",e:"Signallar qarama-qarshi edi (ustunlik faqat {p}%). To'g'ri o'tkazdingiz."},
       skipMiss:{t:"Imkoniyat boy berildi",e:"Haqiqiy ustunlik bor edi ({p}%). O'tkazish yaxshi imkoniyatga tushdi."},
-      skipOk:{t:"Maqbul o'tkazish",e:"O'rtacha ustunlik ({p}%) — o'tkazish oqilona."} } },
+      skipOk:{t:"Maqbul o'tkazish",e:"O'rtacha ustunlik ({p}%) — o'tkazish oqilona."} },
+    round:"Raund", continue:"Davom etish", showResult:"Natijani ko'rsatish", newSession:"Yangi sessiya", end:"Yakunlash",
+    sessionDone:"O'ynalgan raundlar: {n}", decisionQuality:"Qaror sifati", calibration:"Kalibrlash", skips:"O'tkazishlar", dynamics:"P&L dinamikasi",
+    ranks:{ k1:"Yangi", k2:"Grafik o'quvchi", k3:"Tahlilchi", k4:"Kalibrlash ustasi" } },
 };
 const L = (o, lang) => (o && typeof o === "object" ? (o[lang] || o.ru || o.en) : o);
 const SESS = [ { k:"test", len:1 }, { k:"quick", len:5 }, { k:"medium", len:10 }, { k:"all", len:30 } ];
@@ -110,6 +122,9 @@ function verdictOf(dir, pnl, pDir, edge) {
 }
 const VCOL = { right:"#22C55E", lucky:"#EAB308", unlucky:"#4C7DF0", mistake:"#E24B4A", fair:"#8B9096",
   skipGood:"#22C55E", skipMiss:"#EAB308", skipOk:"#8B9096" };
+// качество решения (не исход!) для каждого вердикта: 0..1
+const QUAL = { right:1, unlucky:0.85, skipGood:1, skipOk:0.6, fair:0.5, lucky:0.3, skipMiss:0.3, mistake:0 };
+const rankKey = (q) => q < 0.4 ? "k1" : q < 0.6 ? "k2" : q < 0.8 ? "k3" : "k4";
 
 function PatternIcon({ icon, color, size=42 }) {
   const s = { fill:"none", stroke:color, strokeWidth:2, strokeLinejoin:"round", strokeLinecap:"round" };
@@ -165,6 +180,8 @@ export default function ChartReadingSimulator() {
   const [dir, setDir] = useState(null);      // up | down | skip
   const [strength, setStrength] = useState(60);
   const [result, setResult] = useState(null);
+  const [roundNum, setRoundNum] = useState(1);
+  const [sessionData, setSessionData] = useState([]);
   const t = T[lang];
   const G = DATA.groups;
 
@@ -176,10 +193,23 @@ export default function ChartReadingSimulator() {
 
   function deal() {
     setActive({ F:rnd(byRow.F), I:rnd(byRow.I), C:rnd(byRow.C) });
-    setDir(null); setStrength(60);
+    setDir(null); setStrength(60); setResult(null);
     setPhase("spinning");
     setNonce((n) => n + 1);
     setTimeout(() => setPhase("decide"), 1900 + 500);
+  }
+
+  function startSession() {
+    setRoundNum(1); setSessionData([]);
+    deal();
+  }
+  function nextRound() {
+    if (roundNum >= sessionLen) { setPhase("final"); return; }
+    setRoundNum((n) => n + 1);
+    deal();
+  }
+  function endSession() {
+    setPhase(sessionData.length > 0 ? "final" : "idle");
   }
 
   function confirm() {
@@ -200,6 +230,7 @@ export default function ChartReadingSimulator() {
     const probForText = dir === "skip" ? edge : pDir;
     setResult({ pUp, pDown, up, move, pnl, pDir, edge, vk, probForText,
       sigs: sigs.map((x) => ({ id:x.id, row:x.row, dir:x.dir, p:adjProb(x, group), pUp:pUpOf(x, group), t:x.t, d:x.d, icon:x.icon })) });
+    setSessionData((d) => [...d, { pnl, quality:QUAL[vk], calibErr: dir==="skip" ? null : Math.abs(strength - pDir), skip: dir==="skip" }]);
     setPhase("result");
   }
 
@@ -240,7 +271,7 @@ export default function ChartReadingSimulator() {
               </button>
             ))}
           </div>
-          <button className="cta" onClick={deal}>{t.start}</button>
+          <button className="cta" onClick={startSession}>{t.start}</button>
         </section>
       )}
 
@@ -248,7 +279,10 @@ export default function ChartReadingSimulator() {
         <section className="board">
           <div className="board-head">
             <span className="chip-g" style={{color:G[group].hue,borderColor:G[group].hue+"66",background:G[group].hue+"14"}}>{L(G[group].name, lang)}</span>
-            <span className="board-status">{phase==="spinning" ? t.reading : t.signalsOut}</span>
+            <span className="board-right">
+              <span className="board-status">{t.round} {roundNum}/{sessionLen}</span>
+              <button className="end-btn" onClick={endSession}>{t.end}</button>
+            </span>
           </div>
 
           {phase === "spinning" && (
@@ -363,11 +397,53 @@ export default function ChartReadingSimulator() {
                 )}
               </div>
 
-              <button className="cta" onClick={deal}>{t.again}</button>
+              <button className="cta" onClick={nextRound}>
+                {roundNum >= sessionLen ? t.showResult : t.continue}
+              </button>
             </div>
           )}
         </section>
       )}
+
+      {phase === "final" && (() => {
+        const n = sessionData.length || 1;
+        const totalPnl = sessionData.reduce((s, x) => s + x.pnl, 0);
+        const avgQ = sessionData.reduce((s, x) => s + x.quality, 0) / n;
+        const calibRounds = sessionData.filter((x) => x.calibErr != null);
+        const avgCalib = calibRounds.length ? Math.round(100 - calibRounds.reduce((s, x) => s + x.calibErr, 0) / calibRounds.length) : null;
+        const rk = t.ranks[rankKey(avgQ)];
+        const skips = sessionData.filter((x) => x.skip).length;
+        // кривая капитала
+        let cum = 0; const pts = sessionData.map((x) => (cum += x.pnl));
+        const mn = Math.min(0, ...pts), mx = Math.max(0, ...pts), rg = mx - mn || 1;
+        const curve = pts.map((v, i) => `${pts.length === 1 ? 0 : (i / (pts.length - 1)) * 300},${64 - ((v - mn) / rg) * 56}`).join(" ");
+        const base = 64 - ((0 - mn) / rg) * 56;
+        return (
+          <section className="final">
+            <div className="fin-rank">{rk}</div>
+            <div className={"fin-pnl " + (totalPnl >= 0 ? "up" : "dn")}>{totalPnl >= 0 ? "+" : "−"}${Math.abs(totalPnl)}</div>
+            <div className="fin-sub">{t.sessionDone.replace("{n}", n)}</div>
+
+            <div className="fin-metrics">
+              <div className="fmet"><div className="fmet-v">{Math.round(avgQ * 100)}%</div><div className="fmet-l">{t.decisionQuality}</div></div>
+              <div className="fmet"><div className="fmet-v">{avgCalib != null ? avgCalib + "%" : "—"}</div><div className="fmet-l">{t.calibration}</div></div>
+              <div className="fmet"><div className="fmet-v">{skips}</div><div className="fmet-l">{t.skips}</div></div>
+            </div>
+
+            {pts.length > 1 && (
+              <div className="fin-curve">
+                <div className="eyebrow" style={{textAlign:"center"}}>{t.dynamics}</div>
+                <svg viewBox="0 0 300 70" preserveAspectRatio="none" className="curve">
+                  <line x1="0" y1={base} x2="300" y2={base} stroke={C.ln} strokeWidth="1" strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
+                  <polyline points={curve} fill="none" stroke={totalPnl >= 0 ? C.gn : C.rd} strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round" />
+                </svg>
+              </div>
+            )}
+
+            <button className="cta" onClick={() => setPhase("idle")}>{t.newSession}</button>
+          </section>
+        );
+      })()}
     </div>
   );
 }
@@ -405,6 +481,9 @@ const CSS = `
 .board-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
 .chip-g{font-size:11px;font-weight:700;border:1px solid;border-radius:20px;padding:5px 11px;}
 .board-status{font-size:11px;color:${C.mu};}
+.board-right{display:inline-flex;align-items:center;gap:10px;}
+.end-btn{font-size:11px;font-weight:700;color:${C.mu};background:none;border:1px solid ${C.ln};border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit;}
+.end-btn:hover{color:${C.tx};border-color:${C.mu};}
 .ribbons{display:flex;flex-direction:column;gap:11px;}
 .rb-row{display:flex;flex-direction:column;gap:5px;}
 .rb-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;}
@@ -452,4 +531,15 @@ const CSS = `
 .combo-bar{height:8px;border-radius:5px;overflow:hidden;display:flex;background:${C.sf};}
 .combo-ends{display:flex;justify-content:space-between;font-size:10px;font-weight:700;margin-top:6px;}
 .combo-note{font-size:10.5px;color:${C.mu};margin-top:10px;padding-top:9px;border-top:1px solid ${C.ln};text-align:center;}
+.final{padding:26px 18px 30px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.fin-rank{font-size:20px;font-weight:800;color:${C.ac};margin-bottom:4px;}
+.fin-pnl{font-size:36px;font-weight:800;letter-spacing:-.02em;margin-bottom:2px;}
+.fin-pnl.up{color:${C.gn};} .fin-pnl.dn{color:${C.rd};}
+.fin-sub{font-size:12px;color:${C.mu};margin-bottom:22px;}
+.fin-metrics{display:flex;gap:9px;width:100%;margin-bottom:22px;}
+.fmet{flex:1;background:${C.sf};border:1px solid ${C.ln};border-radius:12px;padding:14px 6px;}
+.fmet-v{font-size:20px;font-weight:800;color:${C.tx};}
+.fmet-l{font-size:10px;color:${C.mu};margin-top:3px;line-height:1.2;}
+.fin-curve{width:100%;margin-bottom:22px;}
+.curve{width:100%;height:70px;display:block;}
 `;
