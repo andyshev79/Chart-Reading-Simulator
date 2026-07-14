@@ -203,11 +203,11 @@ function PatternChart({ icon, color }) {
     goldcross:<g>{ln("6,56 254,20",color,3)}{ln("6,26 254,52",mu,3)}<circle cx="150" cy="38" r="4.5" fill={color}/><text x="8" y="16" fontSize="9" fill={color}>MA50</text><text x="204" y="64" fontSize="9" fill={mu}>MA200</text></g>,
     breakvol:<g><line x1="30" y1="20" x2="248" y2="20" stroke={mu} strokeWidth="1.4" strokeDasharray="5 3"/>{ln("6,58 50,52 96,42 142,32 188,24 214,20")}<circle cx="214" cy="20" r="4" fill={color}/><g fill={color}><rect x="150" y="54" width="8" height="12"/><rect x="166" y="48" width="8" height="18"/><rect x="182" y="40" width="8" height="26"/><rect x="198" y="32" width="8" height="34"/></g><text x="34" y="16" fontSize="9" fill={mu}>уровень</text><text x="150" y="50" fontSize="8" fill={mu}>объём↑</text></g>,
     breaknovol:<g><line x1="30" y1="20" x2="248" y2="20" stroke={mu} strokeWidth="1.4" strokeDasharray="5 3"/>{ln("6,58 50,52 96,42 142,32 188,24 214,20",color,2.6,"6 4")}<g fill={mu}><rect x="166" y="60" width="8" height="6"/><rect x="182" y="58" width="8" height="8"/><rect x="198" y="59" width="8" height="7"/></g><text x="34" y="16" fontSize="9" fill={mu}>уровень</text><text x="150" y="52" fontSize="8" fill={mu}>объём слабый</text></g>,
-    boll:<g>{ln("6,12 130,20 254,14",mu,1.8)}{ln("6,64 130,56 254,62",mu,1.8)}{ln("6,38 40,26 78,50 120,32 160,46 200,36 240,40 254,38",color,2.4)}<text x="8" y="10" fontSize="8" fill={mu}>верхняя</text><text x="8" y="74" fontSize="8" fill={mu}>нижняя</text></g>,
+    bollinger:<g>{ln("6,12 130,20 254,14",mu,1.8)}{ln("6,64 130,56 254,62",mu,1.8)}{ln("6,38 40,26 78,50 120,32 160,46 200,36 240,40 254,38",color,2.4)}<text x="8" y="10" fontSize="8" fill={mu}>верхняя</text><text x="8" y="74" fontSize="8" fill={mu}>нижняя</text></g>,
     bounce:<g><line x1="6" y1="58" x2="254" y2="58" stroke={mu} strokeWidth="1.6" strokeDasharray="5 3"/>{ln("6,12 54,26 110,46 156,57 196,50")}<circle cx="156" cy="57" r="4" fill={color}/><text x="8" y="72" fontSize="9" fill={mu}>уровень поддержки</text></g>,
     // индикаторы с нижней панелью (цена сверху / индикатор снизу)
     rsidiv:<g><line x1="0" y1="38" x2="260" y2="38" stroke={mu} strokeWidth="1" strokeDasharray="2 3"/>{ln("6,28 70,20 140,13 210,9 250,7",mu,2.4)}{ln("6,52 70,56 140,60 210,64 250,66",color,2.4)}<text x="230" y="20" fontSize="9" fill={mu}>цена</text><text x="230" y="62" fontSize="9" fill={color}>RSI</text></g>,
-    rsiob:<g><rect x="0" y="6" width="260" height="16" fill={mu} opacity="0.16"/><rect x="0" y="54" width="260" height="16" fill={mu} opacity="0.16"/>{ln("6,60 70,52 140,40 200,24 240,15",color,2.6)}<circle cx="240" cy="15" r="4" fill={color}/><text x="6" y="18" fontSize="9" fill={mu}>перекуплен</text><text x="6" y="66" fontSize="9" fill={mu}>перепродан</text></g>,
+    rsiover:<g><rect x="0" y="6" width="260" height="16" fill={mu} opacity="0.16"/><rect x="0" y="54" width="260" height="16" fill={mu} opacity="0.16"/>{ln("6,60 70,52 140,40 200,24 240,15",color,2.6)}<circle cx="240" cy="15" r="4" fill={color}/><text x="6" y="18" fontSize="9" fill={mu}>перекуплен</text><text x="6" y="66" fontSize="9" fill={mu}>перепродан</text></g>,
     macd:<g><line x1="6" y1="40" x2="254" y2="40" stroke={mu} strokeWidth="1" strokeDasharray="3 3"/>{ln("6,58 130,40 254,18",color,2.8)}{ln("6,44 130,42 254,34",mu,2.4)}<g fill={color} opacity="0.55"><rect x="150" y="30" width="9" height="10"/><rect x="168" y="24" width="9" height="16"/><rect x="186" y="18" width="9" height="22"/></g><circle cx="128" cy="41" r="4" fill={color}/><text x="8" y="16" fontSize="9" fill={color}>MACD</text><text x="196" y="52" fontSize="9" fill={mu}>сигнал</text></g>,
   };
   // свеча: x-центр, тени (wt..wb), тело (bt..bb); filled=залита цветом, иначе контур
@@ -221,7 +221,7 @@ function PatternChart({ icon, color }) {
   const UP = "#22C55E", DN = "#E24B4A"; // зелёная — вверх, красная — вниз
   const CDL = {
     // контекст (серые свечи до) → формация (зелёная=рост / красная=падение), направление читает игрок
-    bulleng:<g>{cd(40,26,54,32,48,DN,true)}{cd(72,24,52,30,46,DN,true)}{cd(120,14,58,52,20,UP,true,20)}<text x="26" y="68" fontSize="8" fill="#5F6166">до</text><text x="104" y="68" fontSize="8" fill="#5F6166">поглощающая</text></g>,
+    bullengulf:<g>{cd(40,26,54,32,48,DN,true)}{cd(72,24,52,30,46,DN,true)}{cd(120,14,58,52,20,UP,true,20)}<text x="26" y="68" fontSize="8" fill="#5F6166">до</text><text x="104" y="68" fontSize="8" fill="#5F6166">поглощающая</text></g>,
     bearengulf:<g>{cd(40,26,54,48,34,UP,true)}{cd(72,22,50,44,30,UP,true)}{cd(120,14,58,20,52,DN,true,20)}<text x="26" y="68" fontSize="8" fill="#5F6166">до</text><text x="104" y="68" fontSize="8" fill="#5F6166">поглощающая</text></g>,
     hammer:<g>{cd(50,20,40,36,24,DN,true)}{cd(90,26,44,40,30,DN,true)}{cd(140,20,62,34,24,UP,true,18)}<text x="118" y="68" fontSize="8" fill="#5F6166">длинная тень</text></g>,
     shooting:<g>{cd(50,32,52,48,36,UP,true)}{cd(90,28,48,44,32,UP,true)}{cd(140,10,52,52,42,DN,true,18)}<text x="118" y="68" fontSize="8" fill="#5F6166">длинная тень</text></g>,
@@ -586,8 +586,8 @@ const CSS = `
 .rb-center{flex:1;height:124px;border:2px solid;border-radius:12px;background:#131315;padding:9px 12px;box-sizing:border-box;display:flex;flex-direction:column;animation:popin .32s cubic-bezier(.2,.8,.2,1);}
 @keyframes popin{from{transform:scale(.92);}to{transform:scale(1);}}
 .rc-name{font-size:12px;font-weight:800;color:${C.tx};margin-bottom:6px;}
-.rc-chart{height:82px;flex:0 0 82px;min-height:82px;overflow:hidden;}
-.rc-chart svg{width:100%;height:82px;display:block;}
+.rc-chart{height:82px;flex:0 0 82px;}
+.rc-chart svg{width:100%;height:82px;display:block;overflow:visible;}
 .rc-iconbig{display:flex;align-items:center;justify-content:center;height:100%;}
 .rb-nm{font-size:12px;font-weight:700;color:${C.tx};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cards{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
