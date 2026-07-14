@@ -290,17 +290,20 @@ export default function ChartReadingSimulator() {
             <div className="ribbons" key={nonce}>
               {ROWS.map((r, i) => {
                 const hue = DATA.rows[r].hue;
-                const strip = Array.from({length:11}, () => rnd(byRow[r])).concat(active[r]);
-                const cnt = strip.length;
+                const CARDW = 158, TARGET_AT = 13;
+                const strip = [
+                  ...Array.from({length:TARGET_AT}, () => rnd(byRow[r])),
+                  active[r], rnd(byRow[r]), rnd(byRow[r]),
+                ];
                 return (
                   <div className="rb-row" key={r}>
                     <div className="rb-lbl" style={{color:hue}}>{L(DATA.rows[r].name, lang)}</div>
                     <div className="rb-win">
                       <div className="rb-strip spin"
-                        style={{ width:`${cnt*100}%`, animationDelay:`${i*0.18}s`, ["--end"]:`-${(cnt-1)/cnt*100}%` }}>
+                        style={{ animationDelay:`${i*0.15}s`, ["--end"]:`-${TARGET_AT*CARDW}px` }}>
                         {strip.map((sig, k) => (
-                          <div className="rb-cell" style={{width:`${100/cnt}%`, borderLeftColor:hue}} key={k}>
-                            <PatternIcon icon={sig.icon} color={hue} />
+                          <div className="rb-cell" style={{width:`${CARDW}px`, borderLeftColor:hue}} key={k}>
+                            <PatternIcon icon={sig.icon} color={hue} size={34} />
                             <span className="rb-nm">{L(sig.t, lang)}</span>
                           </div>
                         ))}
@@ -486,12 +489,12 @@ const CSS = `
 .ribbons{display:flex;flex-direction:column;gap:11px;}
 .rb-row{display:flex;flex-direction:column;gap:5px;}
 .rb-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;}
-.rb-win{overflow:hidden;border:1px solid ${C.ln};border-radius:12px;background:${C.sf};height:64px;}
-.rb-strip{display:flex;height:100%;}
-.rb-strip.spin{animation:rbspin 1.9s cubic-bezier(.15,.7,.2,1) forwards;}
+.rb-win{overflow:hidden;border:1px solid ${C.ln};border-radius:12px;background:${C.sf};height:60px;position:relative;}
+.rb-strip{display:flex;height:100%;width:max-content;}
+.rb-strip.spin{animation:rbspin 2s cubic-bezier(.12,.6,.15,1) forwards;}
 @keyframes rbspin{from{transform:translateX(0);}to{transform:translateX(var(--end));}}
-.rb-cell{flex:0 0 auto;height:100%;display:flex;align-items:center;gap:11px;padding:0 14px;border-left:3px solid ${C.ln};box-sizing:border-box;}
-.rb-nm{font-size:13px;font-weight:700;color:${C.tx};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rb-cell{flex:0 0 auto;height:100%;display:flex;align-items:center;gap:9px;padding:0 12px;border-left:1px solid ${C.ln};box-sizing:border-box;}
+.rb-nm{font-size:12px;font-weight:700;color:${C.tx};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cards{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
 .scard{display:flex;gap:12px;align-items:flex-start;background:${C.sf};border:1px solid ${C.ln};border-left:3px solid ${C.ln};border-radius:0 11px 11px 0;padding:11px 13px;}
 .sc-ic{flex:0 0 42px;margin-top:2px;}
