@@ -586,8 +586,8 @@ const CSS = `
 .rb-center{flex:1;height:124px;border:2px solid;border-radius:12px;background:#131315;padding:9px 12px;box-sizing:border-box;display:flex;flex-direction:column;animation:popin .32s cubic-bezier(.2,.8,.2,1);}
 @keyframes popin{from{transform:scale(.92);}to{transform:scale(1);}}
 .rc-name{font-size:12px;font-weight:800;color:${C.tx};margin-bottom:6px;}
-.rc-chart{height:82px;}
-.rc-chart svg{width:100%;height:100%;display:block;}
+.rc-chart{height:82px;flex:0 0 82px;min-height:82px;overflow:hidden;}
+.rc-chart svg{width:100%;height:82px;display:block;}
 .rc-iconbig{display:flex;align-items:center;justify-content:center;height:100%;}
 .rb-nm{font-size:12px;font-weight:700;color:${C.tx};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cards{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
