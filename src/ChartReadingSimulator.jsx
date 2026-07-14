@@ -196,10 +196,25 @@ function PatternChart({ icon, color }) {
     wedge:<g>{ln("10,64 44,52 78,44 112,32 146,28 180,18 214,16")}<line x1="10" y1="60" x2="214" y2="14" stroke={mu} strokeWidth="1.3"/><line x1="44" y1="52" x2="214" y2="16" stroke={mu} strokeWidth="1.3" strokeDasharray="5 3"/><circle cx="214" cy="16" r="3.5" fill={color}/></g>,
     cup:<g><path d={"M10,16 C10,64 90,64 120,60 C150,56 150,20 150,16"} fill="none" stroke={color} strokeWidth="2.6" strokeLinecap="round"/>{ln("150,16 168,30 186,26 204,30",color,2.4)}<circle cx="204" cy="30" r="3.5" fill={color}/></g>,
   };
+  const IND = {
+    // индикаторы на цене
+    macross:<g>{ln("6,42 60,38 120,44 180,36 254,40","#3a3d42",1.6)}{ln("6,30 254,46",mu,2.2)}{ln("6,52 254,22",color,2.4)}<circle cx="150" cy="38" r="3.5" fill={color}/></g>,
+    macrossup:<g>{ln("6,42 60,38 120,44 180,36 254,40","#3a3d42",1.6)}{ln("6,34 254,42",mu,2.2)}{ln("6,50 254,24",color,2.4)}<circle cx="140" cy="37" r="3.5" fill={color}/></g>,
+    goldcross:<g>{ln("6,28 254,48",mu,2.6)}{ln("6,54 254,24",color,2.8)}<circle cx="150" cy="38" r="4" fill={color}/></g>,
+    breakvol:<g><line x1="40" y1="24" x2="230" y2="24" stroke={mu} strokeWidth="1.3" strokeDasharray="5 3"/>{ln("6,60 50,54 92,44 134,34 176,27 204,25")}<circle cx="204" cy="25" r="3.5" fill={color}/><g fill={color}><rect x="150" y="60" width="7" height="8"/><rect x="164" y="55" width="7" height="13"/><rect x="178" y="48" width="7" height="20"/><rect x="192" y="42" width="7" height="26"/></g></g>,
+    breaknovol:<g><line x1="40" y1="24" x2="230" y2="24" stroke={mu} strokeWidth="1.3" strokeDasharray="5 3"/>{ln("6,60 50,54 92,44 134,34 176,27 204,25",color,2.4,"5 3")}<g fill={mu}><rect x="164" y="62" width="7" height="6"/><rect x="178" y="60" width="7" height="8"/><rect x="192" y="61" width="7" height="7"/></g></g>,
+    boll:<g>{ln("6,16 254,32",mu,1.6)}{ln("6,60 254,42",mu,1.6)}{ln("6,40 44,30 82,48 120,34 160,42 200,37 254,38",color,2.2)}</g>,
+    bounce:<g><line x1="6" y1="56" x2="254" y2="56" stroke={mu} strokeWidth="1.3" strokeDasharray="5 3"/>{ln("6,16 54,30 110,48 158,55 190,50")}<circle cx="158" cy="55" r="3.5" fill={color}/></g>,
+    // индикаторы с нижней панелью (цена сверху / индикатор снизу)
+    rsidiv:<g><line x1="0" y1="40" x2="260" y2="40" stroke={base} strokeWidth="1"/>{ln("6,30 70,22 140,15 210,11 250,9",mu,2.2)}{ln("6,52 70,55 140,59 210,63 250,65",color,2.2,"4 2")}<text x="6" y="16" fontSize="8" fill="#5F6166">цена</text><text x="6" y="70" fontSize="8" fill="#5F6166">RSI</text></g>,
+    rsiob:<g><line x1="0" y1="40" x2="260" y2="40" stroke={base} strokeWidth="1"/>{ln("6,30 90,26 170,20 250,16",mu,2.2)}<rect x="0" y="44" width="260" height="7" fill={color} opacity="0.14"/><rect x="0" y="62" width="260" height="7" fill={mu} opacity="0.14"/>{ln("6,66 80,60 160,52 230,48",color,2.2)}<circle cx="230" cy="48" r="3" fill={color}/></g>,
+    macd:<g><line x1="0" y1="38" x2="260" y2="38" stroke={base} strokeWidth="1"/>{ln("6,26 254,18",mu,1.8)}<line x1="6" y1="58" x2="254" y2="58" stroke={mu} strokeWidth="1" strokeDasharray="3 3"/>{ln("6,66 120,58 254,48",color,2.2)}{ln("6,56 120,58 254,54",mu,2)}<g fill={color}><rect x="150" y="54" width="6" height="4"/><rect x="164" y="51" width="6" height="7"/><rect x="178" y="48" width="6" height="10"/></g><circle cx="120" cy="58" r="3" fill={color}/></g>,
+  };
+  const subPanel = icon==="rsidiv" || icon==="rsiob" || icon==="macd";
   return (
     <svg viewBox="0 0 260 76" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style={{display:"block"}}>
-      <line x1="0" y1="70" x2="260" y2="70" stroke={base} strokeWidth="1"/>
-      {FIG[icon] || null}
+      {!subPanel && <line x1="0" y1="70" x2="260" y2="70" stroke={base} strokeWidth="1"/>}
+      {FIG[icon] || IND[icon] || null}
     </svg>
   );
 }
@@ -363,7 +378,7 @@ export default function ChartReadingSimulator() {
                         <div className="rb-center" style={{borderColor:hue}}>
                           <div className="rc-name"><span style={{color:hue}}>{t.neut[r]}:</span> {L(sig.nt, lang)}</div>
                           <div className="rc-chart">
-                            {r==="F"
+                            {r==="F" || r==="I"
                               ? <PatternChart icon={sig.icon} color={hue} />
                               : <div className="rc-iconbig"><PatternIcon icon={sig.icon} color={hue} size={78} /></div>}
                           </div>
