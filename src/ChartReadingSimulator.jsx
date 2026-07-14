@@ -210,11 +210,32 @@ function PatternChart({ icon, color }) {
     rsiob:<g><line x1="0" y1="40" x2="260" y2="40" stroke={base} strokeWidth="1"/>{ln("6,30 90,26 170,20 250,16",mu,2.2)}<rect x="0" y="44" width="260" height="7" fill={color} opacity="0.14"/><rect x="0" y="62" width="260" height="7" fill={mu} opacity="0.14"/>{ln("6,66 80,60 160,52 230,48",color,2.2)}<circle cx="230" cy="48" r="3" fill={color}/></g>,
     macd:<g><line x1="0" y1="38" x2="260" y2="38" stroke={base} strokeWidth="1"/>{ln("6,26 254,18",mu,1.8)}<line x1="6" y1="58" x2="254" y2="58" stroke={mu} strokeWidth="1" strokeDasharray="3 3"/>{ln("6,66 120,58 254,48",color,2.2)}{ln("6,56 120,58 254,54",mu,2)}<g fill={color}><rect x="150" y="54" width="6" height="4"/><rect x="164" y="51" width="6" height="7"/><rect x="178" y="48" width="6" height="10"/></g><circle cx="120" cy="58" r="3" fill={color}/></g>,
   };
+  // свеча: x-центр, тени (wt..wb), тело (bt..bb); filled=залита цветом, иначе контур
+  const cd = (x,wt,wb,bt,bb,col,filled=true,W=15) => (
+    <g key={x+"-"+bt}>
+      <line x1={x} y1={wt} x2={x} y2={wb} stroke={col} strokeWidth="1.6"/>
+      <rect x={x-W/2} y={Math.min(bt,bb)} width={W} height={Math.max(3,Math.abs(bb-bt))} fill={filled?col:C.bg} stroke={col} strokeWidth="1.6"/>
+    </g>
+  );
+  const gr = "#7C8794"; // нейтральные «контекстные» свечи до формации
+  const CDL = {
+    // контекст (серые свечи до) → формация (цветная) → без дорисовки направления
+    bulleng:<g>{cd(40,26,54,32,48,gr,true)}{cd(72,22,50,28,44,gr,true)}{cd(120,14,58,20,52,color,false,20)}<text x="26" y="68" fontSize="8" fill="#5F6166">до</text><text x="104" y="68" fontSize="8" fill="#5F6166">поглощающая</text></g>,
+    bearengulf:<g>{cd(40,26,54,44,30,gr,false)}{cd(72,22,50,40,26,gr,false)}{cd(120,14,58,20,52,color,true,20)}<text x="26" y="68" fontSize="8" fill="#5F6166">до</text><text x="104" y="68" fontSize="8" fill="#5F6166">поглощающая</text></g>,
+    hammer:<g>{cd(50,20,40,24,36,gr,true)}{cd(90,26,44,30,40,gr,false)}{cd(140,20,62,24,34,color,false,18)}<text x="120" y="68" fontSize="8" fill="#5F6166">длинная тень</text></g>,
+    shooting:<g>{cd(50,32,52,36,48,gr,true)}{cd(90,28,48,32,44,gr,true)}{cd(140,10,52,42,52,color,true,18)}<text x="120" y="68" fontSize="8" fill="#5F6166">длинная тень</text></g>,
+    morningstar:<g>{cd(46,18,52,22,48,gr,true)}{cd(96,44,60,48,56,color,true,12)}{cd(150,16,54,20,44,color,false,18)}<text x="30" y="68" fontSize="8" fill="#5F6166">1 · 2 · 3</text></g>,
+    eveningstar:<g>{cd(46,20,54,50,24,gr,false)}{cd(96,14,30,18,26,color,true,12)}{cd(150,22,60,26,52,color,true,18)}<text x="30" y="68" fontSize="8" fill="#5F6166">1 · 2 · 3</text></g>,
+    doji:<g>{cd(60,24,50,30,44,gr,true)}{cd(130,12,60,35,37,color,true,20)}<text x="150" y="40" fontSize="8" fill="#5F6166">открытие≈закрытие</text></g>,
+    soldiers:<g>{cd(50,44,64,48,58,color,false,14)}{cd(96,30,56,34,50,color,false,14)}{cd(142,16,48,20,42,color,false,14)}<text x="40" y="70" fontSize="8" fill="#5F6166">три подряд</text></g>,
+    crows:<g>{cd(50,16,36,20,30,color,true,14)}{cd(96,26,52,30,44,color,true,14)}{cd(142,38,64,42,56,color,true,14)}<text x="40" y="70" fontSize="8" fill="#5F6166">три подряд</text></g>,
+    harami:<g>{cd(60,14,60,20,54,gr,true,22)}{cd(120,34,48,38,44,color,false,12)}<text x="96" y="68" fontSize="8" fill="#5F6166">малая внутри</text></g>,
+  };
   const subPanel = icon==="rsidiv" || icon==="rsiob" || icon==="macd";
   return (
     <svg viewBox="0 0 260 76" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style={{display:"block"}}>
       {!subPanel && <line x1="0" y1="70" x2="260" y2="70" stroke={base} strokeWidth="1"/>}
-      {FIG[icon] || IND[icon] || null}
+      {FIG[icon] || IND[icon] || CDL[icon] || null}
     </svg>
   );
 }
@@ -378,9 +399,7 @@ export default function ChartReadingSimulator() {
                         <div className="rb-center" style={{borderColor:hue}}>
                           <div className="rc-name"><span style={{color:hue}}>{t.neut[r]}:</span> {L(sig.nt, lang)}</div>
                           <div className="rc-chart">
-                            {r==="F" || r==="I"
-                              ? <PatternChart icon={sig.icon} color={hue} />
-                              : <div className="rc-iconbig"><PatternIcon icon={sig.icon} color={hue} size={78} /></div>}
+                            <PatternChart icon={sig.icon} color={hue} />
                           </div>
                         </div>
                         <div className="rb-side" style={{borderColor:hue+"4D"}}>
