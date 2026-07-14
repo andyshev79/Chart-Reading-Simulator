@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useLayoutEffect } from "react";
 import DATA from "./patterns.json";
 
 const C = { bg:"#0A0A0B", sf:"#161719", ln:"#2A2D31", ac:"#FF5A2C", bl:"#4C7DF0",
@@ -99,6 +99,7 @@ const SESS = [ { k:"test", len:1 }, { k:"quick", len:5 }, { k:"medium", len:10 }
 const RELI = { low:"★★★", trend:"★★", high:"★" };
 const MOVES = { low:"$", trend:"$$", high:"$$$" };
 const ROWS = ["F","I","C"];
+const CARDW = 158, TARGET_AT = 13;   // ширина карточки и позиция выпавшей в ленте
 const rnd = (a) => a[Math.floor(Math.random()*a.length)];
 const STAKE = 1000;
 const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
@@ -180,6 +181,9 @@ export default function ChartReadingSimulator() {
   const [group, setGroup] = useState("trend");
   const [sessionLen, setSessionLen] = useState(5);
   const [active, setActive] = useState(null);
+  const [strips, setStrips] = useState(null);
+  const [winW, setWinW] = useState(0);
+  const winRef = useRef(null);
   const [nonce, setNonce] = useState(0);
   const [pos, setPos] = useState(0);         // -100..+100, центр 0 = пропуск
   const [result, setResult] = useState(null);
@@ -196,12 +200,24 @@ export default function ChartReadingSimulator() {
     return m;
   }, []);
 
+  useLayoutEffect(() => {
+    if ((phase === "spinning" || phase === "decide") && winRef.current) {
+      setWinW(winRef.current.offsetWidth);
+    }
+  }, [phase, nonce]);
+
   function deal() {
-    setActive({ F:rnd(byRow.F), I:rnd(byRow.I), C:rnd(byRow.C) });
+    const picked = { F:rnd(byRow.F), I:rnd(byRow.I), C:rnd(byRow.C) };
+    const mk = (r) => [
+      ...Array.from({length:TARGET_AT}, () => rnd(byRow[r])),
+      picked[r], rnd(byRow[r]), rnd(byRow[r]),
+    ];
+    setStrips({ F:mk("F"), I:mk("I"), C:mk("C") });
+    setActive(picked);
     setPos(0); setResult(null);
     setPhase("spinning");
     setNonce((n) => n + 1);
-    setTimeout(() => setPhase("decide"), 1900 + 500);
+    setTimeout(() => setPhase("decide"), 2400);
   }
 
   function startSession() {
@@ -286,27 +302,31 @@ export default function ChartReadingSimulator() {
             <span className="board-status">{t.round} {roundNum}/{sessionLen}</span>
           </div>
 
-          {phase === "spinning" && (
+          {(phase === "spinning" || phase === "decide") && strips && (
             <div className="ribbons" key={nonce}>
               {ROWS.map((r, i) => {
                 const hue = DATA.rows[r].hue;
-                const CARDW = 158, TARGET_AT = 13;
-                const strip = [
-                  ...Array.from({length:TARGET_AT}, () => rnd(byRow[r])),
-                  active[r], rnd(byRow[r]), rnd(byRow[r]),
-                ];
+                const spinning = phase === "spinning";
+                const end = winW ? -(TARGET_AT*CARDW) + (winW - CARDW)/2 : -(TARGET_AT*CARDW);
                 return (
                   <div className="rb-row" key={r}>
                     <div className="rb-lbl" style={{color:hue}}>{L(DATA.rows[r].name, lang)}</div>
-                    <div className="rb-win">
-                      <div className="rb-strip spin"
-                        style={{ animationDelay:`${i*0.15}s`, ["--end"]:`-${TARGET_AT*CARDW}px` }}>
-                        {strip.map((sig, k) => (
-                          <div className="rb-cell" style={{width:`${CARDW}px`, borderLeftColor:hue}} key={k}>
-                            <PatternIcon icon={sig.icon} color={hue} size={34} />
-                            <span className="rb-nm">{L(sig.t, lang)}</span>
-                          </div>
-                        ))}
+                    <div className="rb-win" ref={i===0 ? winRef : null}>
+                      <div className={"rb-strip" + (spinning ? " spin" : "")}
+                        style={ spinning
+                          ? { animationDelay:`${i*0.15}s`, ["--end"]:`${end}px`, transform:`translateX(${end}px)` }
+                          : { transform:`translateX(${end}px)` } }>
+                        {strips[r].map((sig, k) => {
+                          const isTarget = !spinning && k === TARGET_AT;
+                          const isDim = !spinning && k !== TARGET_AT;
+                          return (
+                            <div className={"rb-cell" + (isTarget?" landed":"") + (isDim?" dim":"")}
+                              style={{ width:`${CARDW}px`, borderColor: isTarget?hue:undefined, borderLeftColor:hue }} key={k}>
+                              <PatternIcon icon={sig.icon} color={hue} size={34} />
+                              <span className="rb-nm">{L(sig.t, lang)}</span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -317,21 +337,6 @@ export default function ChartReadingSimulator() {
 
           {phase === "decide" && (
             <>
-              <div className="cards">
-                {ROWS.map((r) => {
-                  const hue = DATA.rows[r].hue; const sig = active[r];
-                  return (
-                    <div className="scard" style={{borderLeftColor:hue}} key={r}>
-                      <div className="sc-ic"><PatternIcon icon={sig.icon} color={hue} /></div>
-                      <div className="sc-tx">
-                        <div className="sc-row" style={{color:hue}}>{L(DATA.rows[r].name, lang)}</div>
-                        <div className="sc-nm">{L(sig.t, lang)}</div>
-                        <div className="sc-d">{L(sig.d, lang)}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
 
               <div className="dec">
                 <div className="eyebrow">{t.yourDecision}</div>
@@ -493,7 +498,9 @@ const CSS = `
 .rb-strip{display:flex;height:100%;width:max-content;}
 .rb-strip.spin{animation:rbspin 2s cubic-bezier(.12,.6,.15,1) forwards;}
 @keyframes rbspin{from{transform:translateX(0);}to{transform:translateX(var(--end));}}
-.rb-cell{flex:0 0 auto;height:100%;display:flex;align-items:center;gap:9px;padding:0 12px;border-left:1px solid ${C.ln};box-sizing:border-box;}
+.rb-cell{flex:0 0 auto;height:100%;display:flex;align-items:center;gap:9px;padding:0 12px;border-left:1px solid ${C.ln};box-sizing:border-box;transition:opacity .25s;}
+.rb-cell.dim{opacity:.32;}
+.rb-cell.landed{border:2px solid;border-radius:10px;background:${C.bg};}
 .rb-nm{font-size:12px;font-weight:700;color:${C.tx};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cards{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
 .scard{display:flex;gap:12px;align-items:flex-start;background:${C.sf};border:1px solid ${C.ln};border-left:3px solid ${C.ln};border-radius:0 11px 11px 0;padding:11px 13px;}
