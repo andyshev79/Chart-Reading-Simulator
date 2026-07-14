@@ -179,6 +179,31 @@ function PatternIcon({ icon, color, size=42 }) {
   return <svg viewBox="0 0 48 32" width={size} height={size*0.66} style={{display:"block"}}>{I[icon]||null}</svg>;
 }
 
+// Крупный график паттерна с контекстом (вход/формация/уровень). Направление НЕ дорисовывается — его определяет игрок.
+function PatternChart({ icon, color }) {
+  const mu = "#6B7076", base = "#2A2D31";
+  const ln = (p, c=color, w=2.6, dash) => <polyline points={p} fill="none" stroke={c} strokeWidth={w} strokeLinejoin="round" strokeLinecap="round" strokeDasharray={dash}/>;
+  const FIG = {
+    // фигуры: предшествующий тренд + формация + ключевой уровень, конец в точке решения
+    headshoulders:<g>{ln("6,66 40,58 62,44 78,52 108,26 132,10 156,26 186,52 208,44 226,52")}<line x1="78" y1="52" x2="250" y2="52" stroke={mu} strokeWidth="1.3" strokeDasharray="5 3"/><circle cx="226" cy="52" r="3.5" fill={color}/></g>,
+    doubletop:<g>{ln("6,64 40,54 70,26 100,44 140,26 168,46")}<line x1="60" y1="24" x2="150" y2="24" stroke={mu} strokeWidth="1.3" strokeDasharray="5 3"/><circle cx="168" cy="46" r="3.5" fill={color}/></g>,
+    doublebottom:<g>{ln("6,16 40,26 70,54 100,36 140,54 168,34")}<line x1="60" y1="56" x2="150" y2="56" stroke={mu} strokeWidth="1.3" strokeDasharray="5 3"/><circle cx="168" cy="34" r="3.5" fill={color}/></g>,
+    triangleup:<g>{ln("10,58 40,30 70,52 100,26 130,48 160,24 190,44 220,22")}<line x1="10" y1="20" x2="240" y2="20" stroke={mu} strokeWidth="1.3" strokeDasharray="5 3"/><line x1="10" y1="60" x2="240" y2="22" stroke={mu} strokeWidth="1.3"/><circle cx="220" cy="22" r="3.5" fill={color}/></g>,
+    triangledown:<g>{ln("10,22 40,50 70,28 100,54 130,32 160,56 190,36 220,58")}<line x1="10" y1="60" x2="240" y2="60" stroke={mu} strokeWidth="1.3" strokeDasharray="5 3"/><line x1="10" y1="20" x2="240" y2="58" stroke={mu} strokeWidth="1.3"/><circle cx="220" cy="58" r="3.5" fill={color}/></g>,
+    flagup:<g>{ln("10,66 30,58 50,30 70,10")}{ln("70,10 92,22 114,16 136,30 158,24")}<circle cx="158" cy="24" r="3.5" fill={color}/></g>,
+    flagdown:<g>{ln("10,14 30,22 50,50 70,70")}{ln("70,70 92,58 114,64 136,50 158,56")}<circle cx="158" cy="56" r="3.5" fill={color}/></g>,
+    pennant:<g>{ln("10,66 32,54 54,26 76,10")}<line x1="76" y1="10" x2="150" y2="30" stroke={mu} strokeWidth="1.3"/><line x1="76" y1="46" x2="150" y2="30" stroke={mu} strokeWidth="1.3"/>{ln("76,10 96,34 116,22 136,32 150,30",color,2.4)}<circle cx="150" cy="30" r="3.5" fill={color}/></g>,
+    wedge:<g>{ln("10,64 44,52 78,44 112,32 146,28 180,18 214,16")}<line x1="10" y1="60" x2="214" y2="14" stroke={mu} strokeWidth="1.3"/><line x1="44" y1="52" x2="214" y2="16" stroke={mu} strokeWidth="1.3" strokeDasharray="5 3"/><circle cx="214" cy="16" r="3.5" fill={color}/></g>,
+    cup:<g><path d={"M10,16 C10,64 90,64 120,60 C150,56 150,20 150,16"} fill="none" stroke={color} strokeWidth="2.6" strokeLinecap="round"/>{ln("150,16 168,30 186,26 204,30",color,2.4)}<circle cx="204" cy="30" r="3.5" fill={color}/></g>,
+  };
+  return (
+    <svg viewBox="0 0 260 76" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style={{display:"block"}}>
+      <line x1="0" y1="70" x2="260" y2="70" stroke={base} strokeWidth="1"/>
+      {FIG[icon] || null}
+    </svg>
+  );
+}
+
 export default function ChartReadingSimulator() {
   const [lang, setLang] = useState("ru");
   const [phase, setPhase] = useState("idle"); // idle | spinning | decide
@@ -312,27 +337,42 @@ export default function ChartReadingSimulator() {
                 const hue = DATA.rows[r].hue;
                 const spinning = phase === "spinning";
                 const end = winW ? -(TARGET_AT*CARDW) + (winW - CARDW)/2 : -(TARGET_AT*CARDW);
+                const sig = active[r];
+                const left = strips[r][TARGET_AT-1], right = strips[r][TARGET_AT+1];
                 return (
                   <div className="rb-row" key={r}>
                     <div className="rb-lbl" style={{color:hue}}>{L(DATA.rows[r].name, lang)}</div>
-                    <div className="rb-win" ref={i===0 ? winRef : null}>
-                      <div className={"rb-strip" + (spinning ? " spin" : "")}
-                        style={ spinning
-                          ? { animationDelay:`${i*0.15}s`, ["--end"]:`${end}px`, transform:`translateX(${end}px)` }
-                          : { transform:`translateX(${end}px)` } }>
-                        {strips[r].map((sig, k) => {
-                          const isTarget = !spinning && k === TARGET_AT;
-                          const isDim = !spinning && k !== TARGET_AT;
-                          return (
-                            <div className={"rb-cell" + (isTarget?" landed":"") + (isDim?" dim":"")}
-                              style={{ width:`${CARDW}px`, borderColor: isTarget?hue:undefined, borderLeftColor:hue }} key={k}>
-                              <PatternIcon icon={sig.icon} color={hue} size={34} />
-                              <span className="rb-nm">{spinning ? L(sig.t, lang) : t.neut[r]}</span>
+
+                    {spinning ? (
+                      <div className="rb-win" ref={i===0 ? winRef : null}>
+                        <div className="rb-strip spin"
+                          style={{ animationDelay:`${i*0.15}s`, ["--end"]:`${end}px`, transform:`translateX(${end}px)` }}>
+                          {strips[r].map((s, k) => (
+                            <div className="rb-cell" style={{ width:`${CARDW}px`, borderLeftColor:hue }} key={k}>
+                              <PatternIcon icon={s.icon} color={hue} size={34} />
+                              <span className="rb-nm">{L(s.t, lang)}</span>
                             </div>
-                          );
-                        })}
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="reelbig">
+                        <div className="rb-side" style={{borderColor:hue+"4D"}}>
+                          <PatternIcon icon={left.icon} color={hue} size={30} />
+                        </div>
+                        <div className="rb-center" style={{borderColor:hue}}>
+                          <div className="rc-name"><span style={{color:hue}}>{t.neut[r]}:</span> {L(sig.nt, lang)}</div>
+                          <div className="rc-chart">
+                            {r==="F"
+                              ? <PatternChart icon={sig.icon} color={hue} />
+                              : <div className="rc-iconbig"><PatternIcon icon={sig.icon} color={hue} size={78} /></div>}
+                          </div>
+                        </div>
+                        <div className="rb-side" style={{borderColor:hue+"4D"}}>
+                          <PatternIcon icon={right.icon} color={hue} size={30} />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -505,6 +545,14 @@ const CSS = `
 .rb-cell{flex:0 0 auto;height:100%;display:flex;align-items:center;gap:9px;padding:0 12px;border-left:1px solid ${C.ln};box-sizing:border-box;transition:opacity .25s;}
 .rb-cell.dim{opacity:.32;}
 .rb-cell.landed{border:2px solid;border-radius:10px;background:${C.bg};}
+.reelbig{display:flex;align-items:center;gap:7px;height:126px;animation:growin .32s ease;}
+@keyframes growin{from{opacity:.5;}to{opacity:1;}}
+.rb-side{flex:0 0 40px;height:92px;border:1.5px solid;border-radius:9px;background:#131315;display:flex;align-items:center;justify-content:center;opacity:.55;overflow:hidden;}
+.rb-center{flex:1;height:124px;border:2px solid;border-radius:12px;background:#131315;padding:9px 12px;box-sizing:border-box;display:flex;flex-direction:column;animation:popin .32s cubic-bezier(.2,.8,.2,1);}
+@keyframes popin{from{transform:scale(.92);}to{transform:scale(1);}}
+.rc-name{font-size:12px;font-weight:800;color:${C.tx};margin-bottom:6px;}
+.rc-chart{flex:1;min-height:0;}
+.rc-iconbig{display:flex;align-items:center;justify-content:center;height:100%;}
 .rb-nm{font-size:12px;font-weight:700;color:${C.tx};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cards{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
 .scard{display:flex;gap:12px;align-items:flex-start;background:${C.sf};border:1px solid ${C.ln};border-left:3px solid ${C.ln};border-radius:0 11px 11px 0;padding:11px 13px;}
