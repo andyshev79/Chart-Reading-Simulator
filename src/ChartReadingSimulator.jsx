@@ -12,6 +12,7 @@ const T = {
     reading:"Reading the chart…", signalsOut:"Signals on the chart", again:"Deal again",
     rowF:"Chart patterns", rowI:"Indicators & volume", rowC:"Candlestick patterns",
     yourDecision:"Your decision", up:"Up", down:"Down", skip:"Skip", strength:"Signal strength",
+    buy:"Buy", sell:"Sell", strongBuy:"Confident buy", strongSell:"Confident sell", noTrade:"Stay out",
     stake:"Stake", openTrade:"Open trade", skipTrade:"Skip this trade", weak:"coin toss", strong:"almost sure",
     yourChoice:"Your call", market:"Market", combined:"Combined probability", trueProb:"true prob",
     howWorks:"What came out and how it works", calib:"Your estimate", vsReal:"real",
@@ -33,6 +34,7 @@ const T = {
     reading:"Читаем график…", signalsOut:"Сигналы на графике", again:"Ещё раз",
     rowF:"Графические фигуры", rowI:"Индикаторы и объёмы", rowC:"Свечные комбинации",
     yourDecision:"Ваше решение", up:"Вверх", down:"Вниз", skip:"Пропустить", strength:"Сила сигнала",
+    buy:"Покупка", sell:"Продажа", strongBuy:"Уверенная покупка", strongSell:"Уверенная продажа", noTrade:"Не торговать",
     stake:"Ставка", openTrade:"Открыть сделку", skipTrade:"Пропустить сделку", weak:"случайность", strong:"почти точно",
     yourChoice:"Ваш выбор", market:"Рынок", combined:"Общая вероятность", trueProb:"реальная",
     howWorks:"Что выпало и как это работает", calib:"Ваша оценка", vsReal:"реально",
@@ -54,6 +56,7 @@ const T = {
     reading:"Читаємо графік…", signalsOut:"Сигнали на графіку", again:"Ще раз",
     rowF:"Графічні фігури", rowI:"Індикатори та об'єми", rowC:"Свічкові комбінації",
     yourDecision:"Ваше рішення", up:"Вгору", down:"Вниз", skip:"Пропустити", strength:"Сила сигналу",
+    buy:"Купівля", sell:"Продаж", strongBuy:"Впевнена купівля", strongSell:"Впевнений продаж", noTrade:"Не торгувати",
     stake:"Ставка", openTrade:"Відкрити угоду", skipTrade:"Пропустити угоду", weak:"випадковість", strong:"майже точно",
     yourChoice:"Ваш вибір", market:"Ринок", combined:"Загальна ймовірність", trueProb:"реальна",
     howWorks:"Що випало і як це працює", calib:"Ваша оцінка", vsReal:"реально",
@@ -75,6 +78,7 @@ const T = {
     reading:"Grafik o'qilyapti…", signalsOut:"Grafikdagi signallar", again:"Yana",
     rowF:"Grafik shakllar", rowI:"Indikatorlar va hajm", rowC:"Sham kombinatsiyalari",
     yourDecision:"Sizning qaroringiz", up:"Yuqoriga", down:"Pastga", skip:"O'tkazish", strength:"Signal kuchi",
+    buy:"Sotib olish", sell:"Sotish", strongBuy:"Ishonchli sotib olish", strongSell:"Ishonchli sotish", noTrade:"Savdo qilmaslik",
     stake:"Tikish", openTrade:"Savdo ochish", skipTrade:"Savdoni o'tkazish", weak:"tasodif", strong:"deyarli aniq",
     yourChoice:"Sizning tanlovingiz", market:"Bozor", combined:"Umumiy ehtimol", trueProb:"haqiqiy",
     howWorks:"Nima chiqdi va qanday ishlaydi", calib:"Sizning bahoyingiz", vsReal:"haqiqatda",
@@ -177,13 +181,14 @@ export default function ChartReadingSimulator() {
   const [sessionLen, setSessionLen] = useState(5);
   const [active, setActive] = useState(null);
   const [nonce, setNonce] = useState(0);
-  const [dir, setDir] = useState(null);      // up | down | skip
-  const [strength, setStrength] = useState(60);
+  const [pos, setPos] = useState(0);         // -100..+100, центр 0 = пропуск
   const [result, setResult] = useState(null);
   const [roundNum, setRoundNum] = useState(1);
   const [sessionData, setSessionData] = useState([]);
   const t = T[lang];
   const G = DATA.groups;
+  const dir = pos === 0 ? "skip" : pos > 0 ? "up" : "down"; // up=покупка, down=продажа
+  const strength = Math.abs(pos);                            // уверенность/вероятность, %
 
   const byRow = useMemo(() => {
     const m = { F:[], I:[], C:[] };
@@ -193,7 +198,7 @@ export default function ChartReadingSimulator() {
 
   function deal() {
     setActive({ F:rnd(byRow.F), I:rnd(byRow.I), C:rnd(byRow.C) });
-    setDir(null); setStrength(60); setResult(null);
+    setPos(0); setResult(null);
     setPhase("spinning");
     setNonce((n) => n + 1);
     setTimeout(() => setPhase("decide"), 1900 + 500);
@@ -213,7 +218,6 @@ export default function ChartReadingSimulator() {
   }
 
   function confirm() {
-    if (!dir) return;
     const sigs = ROWS.map((r) => active[r]);
     const pUp = combineUp(sigs, group);
     const pDown = 100 - pUp;
@@ -328,22 +332,22 @@ export default function ChartReadingSimulator() {
 
               <div className="dec">
                 <div className="eyebrow">{t.yourDecision}</div>
-                <div className="dirs">
-                  <button className={"dir" + (dir==="up"?" on up":"")} onClick={()=>setDir("up")}>↑ {t.up}</button>
-                  <button className={"dir" + (dir==="down"?" on dn":"")} onClick={()=>setDir("down")}>↓ {t.down}</button>
-                  <button className={"dir" + (dir==="skip"?" on sk":"")} onClick={()=>setDir("skip")}>{t.skip}</button>
+                <div className="tsl-top">
+                  <span className="tsl-side sell">{t.strongSell}</span>
+                  <span className="tsl-side buy">{t.strongBuy}</span>
+                </div>
+                <input className="tslider" type="range" min="-100" max="100" step="20" value={pos}
+                  onChange={(e)=>setPos(+e.target.value)} />
+                <div className="tsl-scale">
+                  <span>{t.sell}</span><span>{t.noTrade}</span><span>{t.buy}</span>
+                </div>
+                <div className="tsl-readout" style={{color: dir==="skip"?C.mu:dir==="up"?C.gn:C.rd}}>
+                  {dir==="skip" ? t.noTrade
+                    : (strength>=80 ? (dir==="up"?t.strongBuy:t.strongSell) : (dir==="up"?t.buy:t.sell)) + " · " + strength + "%"}
                 </div>
 
-                {dir && dir!=="skip" && (
-                  <div className="str">
-                    <div className="str-lbl"><span>{t.strength}</span><span className="str-v">{strength}%</span></div>
-                    <input type="range" min="50" max="95" step="5" value={strength} onChange={(e)=>setStrength(+e.target.value)} />
-                    <div className="str-ends"><span>50% {t.weak}</span><span>95% {t.strong}</span></div>
-                  </div>
-                )}
-
                 <div className="stake">{t.stake}: <b>${STAKE.toLocaleString()}</b></div>
-                <button className="cta" disabled={!dir} style={!dir?{opacity:.5}:{}} onClick={confirm}>
+                <button className="cta" onClick={confirm}>
                   {dir==="skip" ? t.skipTrade : t.openTrade}
                 </button>
                 <button className="cta ghost" onClick={endSession}>{t.end}</button>
@@ -496,19 +500,15 @@ const CSS = `
 .sc-nm{font-size:14px;font-weight:800;color:${C.tx};margin-bottom:3px;}
 .sc-d{font-size:11.5px;line-height:1.4;color:${C.mu};}
 .dec{}
-.dirs{display:flex;gap:7px;margin-bottom:14px;}
-.dir{flex:1;text-align:center;font-size:13px;font-weight:800;color:${C.mu};background:${C.sf};border:1px solid ${C.ln};border-radius:10px;padding:12px 0;cursor:pointer;font-family:inherit;}
-.dir.on.up{color:${C.bg};background:${C.gn};border-color:${C.gn};}
-.dir.on.dn{color:${C.bg};background:${C.rd};border-color:${C.rd};}
-.dir.on.sk{color:${C.tx};background:${C.ln};border-color:${C.mu};}
-.str{margin-bottom:14px;}
-.str-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
-.str-lbl span:first-child{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:${C.mu};font-weight:700;}
-.str-v{font-size:20px;font-weight:800;color:${C.ac};}
-.str input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:${C.sf};outline:none;}
-.str input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:${C.ac};cursor:pointer;}
-.str input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-radius:50%;background:${C.ac};cursor:pointer;}
-.str-ends{display:flex;justify-content:space-between;font-size:9px;color:#5F5E5A;margin-top:5px;}
+.tsl-top{display:flex;justify-content:space-between;margin-bottom:8px;}
+.tsl-side{font-size:11px;font-weight:800;}
+.tsl-side.sell{color:${C.rd};} .tsl-side.buy{color:${C.gn};}
+.tslider{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:5px;outline:none;
+  background:linear-gradient(90deg, ${C.rd} 0%, ${C.rd} 38%, ${C.ln} 44%, ${C.ln} 56%, ${C.gn} 62%, ${C.gn} 100%);}
+.tslider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;border-radius:50%;background:${C.tx};border:3px solid ${C.bg};box-shadow:0 0 0 1px ${C.ln};cursor:pointer;}
+.tslider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:${C.tx};border:3px solid ${C.bg};cursor:pointer;}
+.tsl-scale{display:flex;justify-content:space-between;font-size:9px;color:#5F5E5A;margin-top:6px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;}
+.tsl-readout{text-align:center;font-size:18px;font-weight:800;margin:14px 0 4px;}
 .stake{text-align:center;font-size:12px;color:${C.mu};margin-bottom:14px;}
 .stake b{color:${C.tx};}
 .res-top{text-align:center;margin-bottom:14px;}
