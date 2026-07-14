@@ -218,18 +218,19 @@ function PatternChart({ icon, color }) {
     </g>
   );
   const gr = "#7C8794"; // нейтральные «контекстные» свечи до формации
+  const UP = "#22C55E", DN = "#E24B4A"; // зелёная — вверх, красная — вниз
   const CDL = {
-    // контекст (серые свечи до) → формация (цветная) → без дорисовки направления
-    bulleng:<g>{cd(40,26,54,32,48,gr,true)}{cd(72,22,50,28,44,gr,true)}{cd(120,14,58,20,52,color,false,20)}<text x="26" y="68" fontSize="8" fill="#5F6166">до</text><text x="104" y="68" fontSize="8" fill="#5F6166">поглощающая</text></g>,
-    bearengulf:<g>{cd(40,26,54,44,30,gr,false)}{cd(72,22,50,40,26,gr,false)}{cd(120,14,58,20,52,color,true,20)}<text x="26" y="68" fontSize="8" fill="#5F6166">до</text><text x="104" y="68" fontSize="8" fill="#5F6166">поглощающая</text></g>,
-    hammer:<g>{cd(50,20,40,24,36,gr,true)}{cd(90,26,44,30,40,gr,false)}{cd(140,20,62,24,34,color,false,18)}<text x="120" y="68" fontSize="8" fill="#5F6166">длинная тень</text></g>,
-    shooting:<g>{cd(50,32,52,36,48,gr,true)}{cd(90,28,48,32,44,gr,true)}{cd(140,10,52,42,52,color,true,18)}<text x="120" y="68" fontSize="8" fill="#5F6166">длинная тень</text></g>,
-    morningstar:<g>{cd(46,18,52,22,48,gr,true)}{cd(96,44,60,48,56,color,true,12)}{cd(150,16,54,20,44,color,false,18)}<text x="30" y="68" fontSize="8" fill="#5F6166">1 · 2 · 3</text></g>,
-    eveningstar:<g>{cd(46,20,54,50,24,gr,false)}{cd(96,14,30,18,26,color,true,12)}{cd(150,22,60,26,52,color,true,18)}<text x="30" y="68" fontSize="8" fill="#5F6166">1 · 2 · 3</text></g>,
-    doji:<g>{cd(60,24,50,30,44,gr,true)}{cd(130,12,60,35,37,color,true,20)}<text x="150" y="40" fontSize="8" fill="#5F6166">открытие≈закрытие</text></g>,
-    soldiers:<g>{cd(50,44,64,48,58,color,false,14)}{cd(96,30,56,34,50,color,false,14)}{cd(142,16,48,20,42,color,false,14)}<text x="40" y="70" fontSize="8" fill="#5F6166">три подряд</text></g>,
-    crows:<g>{cd(50,16,36,20,30,color,true,14)}{cd(96,26,52,30,44,color,true,14)}{cd(142,38,64,42,56,color,true,14)}<text x="40" y="70" fontSize="8" fill="#5F6166">три подряд</text></g>,
-    harami:<g>{cd(60,14,60,20,54,gr,true,22)}{cd(120,34,48,38,44,color,false,12)}<text x="96" y="68" fontSize="8" fill="#5F6166">малая внутри</text></g>,
+    // контекст (серые свечи до) → формация (зелёная=рост / красная=падение), направление читает игрок
+    bulleng:<g>{cd(40,26,54,32,48,DN,true)}{cd(72,24,52,30,46,DN,true)}{cd(120,14,58,52,20,UP,true,20)}<text x="26" y="68" fontSize="8" fill="#5F6166">до</text><text x="104" y="68" fontSize="8" fill="#5F6166">поглощающая</text></g>,
+    bearengulf:<g>{cd(40,26,54,48,34,UP,true)}{cd(72,22,50,44,30,UP,true)}{cd(120,14,58,20,52,DN,true,20)}<text x="26" y="68" fontSize="8" fill="#5F6166">до</text><text x="104" y="68" fontSize="8" fill="#5F6166">поглощающая</text></g>,
+    hammer:<g>{cd(50,20,40,36,24,DN,true)}{cd(90,26,44,40,30,DN,true)}{cd(140,20,62,34,24,UP,true,18)}<text x="118" y="68" fontSize="8" fill="#5F6166">длинная тень</text></g>,
+    shooting:<g>{cd(50,32,52,48,36,UP,true)}{cd(90,28,48,44,32,UP,true)}{cd(140,10,52,52,42,DN,true,18)}<text x="118" y="68" fontSize="8" fill="#5F6166">длинная тень</text></g>,
+    morningstar:<g>{cd(46,18,52,22,48,DN,true)}{cd(96,44,60,54,50,gr,true,12)}{cd(150,16,54,44,20,UP,true,18)}<text x="30" y="68" fontSize="8" fill="#5F6166">1 · 2 · 3</text></g>,
+    eveningstar:<g>{cd(46,20,54,50,24,UP,true)}{cd(96,14,30,24,20,gr,true,12)}{cd(150,22,60,26,52,DN,true,18)}<text x="30" y="68" fontSize="8" fill="#5F6166">1 · 2 · 3</text></g>,
+    doji:<g>{cd(60,24,50,44,30,gr,true)}{cd(130,12,60,35,37,gr,true,20)}<text x="150" y="40" fontSize="8" fill="#5F6166">открытие≈закрытие</text></g>,
+    soldiers:<g>{cd(50,44,64,58,48,UP,true,14)}{cd(96,30,56,50,34,UP,true,14)}{cd(142,16,48,42,20,UP,true,14)}<text x="40" y="70" fontSize="8" fill="#5F6166">три подряд</text></g>,
+    crows:<g>{cd(50,16,36,20,30,DN,true,14)}{cd(96,26,52,30,44,DN,true,14)}{cd(142,38,64,42,56,DN,true,14)}<text x="40" y="70" fontSize="8" fill="#5F6166">три подряд</text></g>,
+    harami:<g>{cd(60,14,60,54,20,UP,true,22)}{cd(120,34,48,44,38,DN,true,12)}<text x="94" y="68" fontSize="8" fill="#5F6166">малая внутри</text></g>,
   };
   const subPanel = icon==="rsidiv" || icon==="rsiob" || icon==="macd";
   return (
