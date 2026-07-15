@@ -251,7 +251,7 @@ export default function ChartReadingSimulator() {
   const [winW, setWinW] = useState(0);
   const winRef = useRef(null);
   const [nonce, setNonce] = useState(0);
-  const [pos, setPos] = useState(0);         // -100..+100, центр 0 = пропуск
+  const [pos, setPos] = useState(100);       // ЛАЙТ: всегда "покупка" на максимум
   const [result, setResult] = useState(null);
   const [roundNum, setRoundNum] = useState(1);
   const [sessionData, setSessionData] = useState([]);
@@ -280,7 +280,7 @@ export default function ChartReadingSimulator() {
     ];
     setStrips({ F:mk("F"), I:mk("I"), C:mk("C") });
     setActive(picked);
-    setPos(0); setResult(null);
+    setPos(100); setResult(null);
     setPhase("spinning");
     setNonce((n) => n + 1);
     setTimeout(() => setPhase("decide"), 2400);
@@ -295,15 +295,18 @@ export default function ChartReadingSimulator() {
     setRoundNum((n) => n + 1);
     deal();
   }
-  function endSession() {
-    setPhase(sessionData.length > 0 ? "final" : "idle");
+  function claimProfit() {
+    if (window.parent !== window) {
+      window.parent.postMessage({ status: "success", lessonId: 101 }, "*");
+    }
+    nextRound();
   }
 
   function confirm() {
     const sigs = ROWS.map((r) => active[r]);
     const pUp = combineUp(sigs, group);
     const pDown = 100 - pUp;
-    const up = Math.random() * 100 < pUp;                       // истинный исход
+    const up = true;                                             // ЛАЙТ: исход захардкожен для хакатон-демо
     const amp = G[group].vol * 4 * (0.7 + Math.random() * 0.6); // амплитуда, %
     const move = +((up ? 1 : -1) * amp).toFixed(1);
     let pnl = 0, pDir = 50;
@@ -419,25 +422,12 @@ export default function ChartReadingSimulator() {
 
               <div className="dec">
                 <div className="eyebrow">{t.yourDecision}</div>
-                <div className="tsl-top">
-                  <span className="tsl-side sell">{t.strongSell}</span>
-                  <span className="tsl-side buy">{t.strongBuy}</span>
-                </div>
-                <input className="tslider" type="range" min="-100" max="100" step="20" value={pos}
+                <input className="tslider lite-hidden" type="range" min="-100" max="100" step="20" value={pos}
                   onChange={(e)=>setPos(+e.target.value)} />
-                <div className="tsl-scale">
-                  <span>{t.sell}</span><span>{t.noTrade}</span><span>{t.buy}</span>
-                </div>
-                <div className="tsl-readout" style={{color: dir==="skip"?C.mu:dir==="up"?C.gn:C.rd}}>
-                  {dir==="skip" ? t.noTrade
-                    : (strength>=80 ? (dir==="up"?t.strongBuy:t.strongSell) : (dir==="up"?t.buy:t.sell)) + " · " + strength + "%"}
-                </div>
+                <div className="lite-hint">👆 Нажимай сюда — будет рост!</div>
 
                 <div className="stake">{t.stake}: <b>${STAKE.toLocaleString()}</b></div>
-                <button className="cta" onClick={confirm}>
-                  {dir==="skip" ? t.skipTrade : t.openTrade}
-                </button>
-                <button className="cta ghost" onClick={endSession}>{t.end}</button>
+                <button className="cta buy-cta" onClick={confirm}>▲ Купить — будет рост</button>
               </div>
             </>
           )}
@@ -445,50 +435,17 @@ export default function ChartReadingSimulator() {
             <div className="res">
               <div className="res-top">
                 <div className="res-choice">
-                  {t.yourChoice}: <b style={{color: dir==="up"?C.gn:dir==="down"?C.rd:C.mu}}>
-                    {dir==="skip" ? t.skip : (dir==="up"?("↑ "+t.up):("↓ "+t.down)) + " · " + strength + "%"}
-                  </b>
-                  {" · "}{t.market}: <b style={{color: result.up?C.gn:C.rd}}>{result.up?"↑":"↓"} {result.move>0?"+":""}{result.move}%</b>
+                  {t.market}: <b style={{color: result.up?C.gn:C.rd}}>{result.up?"↑":"↓"} {result.move>0?"+":""}{result.move}%</b>
                 </div>
-                {dir!=="skip" && <div className={"res-pnl " + (result.pnl>=0?"up":"dn")}>{result.pnl>=0?"+":"−"}${Math.abs(result.pnl)}</div>}
+                <div className={"res-pnl " + (result.pnl>=0?"up":"dn")}>{result.pnl>=0?"+":"−"}${Math.abs(result.pnl)}</div>
               </div>
 
-              <div className="verd" style={{borderColor:VCOL[result.vk]+"66", background:VCOL[result.vk]+"14"}}>
-                <div className="verd-t" style={{color:VCOL[result.vk]}}>{t.verd[result.vk].t}</div>
-                <div className="verd-e">{t.verd[result.vk].e.replace("{p}", result.probForText)}</div>
+              <div className="lite-success">
+                <div className="lite-success-t">✅ Отличное решение!</div>
+                <div className="lite-success-e">Ваш прогноз оказался верным. Вы заработали свои первые виртуальные деньги! Вы отлично чувствуете рынок.</div>
               </div>
 
-              <div className="eyebrow">{t.howWorks}</div>
-              <div className="cards">
-                {result.sigs.map((sg) => {
-                  const hue = DATA.rows[sg.row].hue;
-                  const arrow = sg.dir==="up" ? "↑" : sg.dir==="down" ? "↓" : "≈";
-                  const acol = sg.dir==="up" ? C.gn : sg.dir==="down" ? C.rd : C.mu;
-                  return (
-                    <div className="scard" style={{borderLeftColor:hue}} key={sg.id}>
-                      <div className="sc-ic"><PatternIcon icon={sg.icon} color={hue} /></div>
-                      <div className="sc-tx">
-                        <div className="sc-head"><span className="sc-nm">{L(sg.t, lang)}</span><span className="sc-p" style={{color:acol}}>{arrow} {sg.p}%</span></div>
-                        <div className="sc-d">{L(sg.d, lang)}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="combo">
-                <div className="combo-h"><span>{t.combined} ↑</span><span className="combo-v">{result.pUp}%</span></div>
-                <div className="combo-bar"><span style={{width:result.pUp+"%",background:C.gn}} /><span style={{width:result.pDown+"%",background:C.rd}} /></div>
-                <div className="combo-ends"><span style={{color:C.gn}}>↑ {result.pUp}%</span><span style={{color:C.rd}}>↓ {result.pDown}%</span></div>
-                {dir!=="skip" && (
-                  <div className="combo-note">{t.calib}: {strength}% · {t.vsReal}: {result.pDir}%</div>
-                )}
-              </div>
-
-              <button className="cta" onClick={nextRound}>
-                {roundNum >= sessionLen ? t.showResult : t.continue}
-              </button>
-              {roundNum < sessionLen && <button className="cta ghost" onClick={endSession}>{t.end}</button>}
+              <button className="cta buy-cta" onClick={claimProfit}>Забрать профит и продолжить</button>
             </div>
           )}
         </section>
@@ -635,4 +592,11 @@ const CSS = `
 .fmet-l{font-size:10px;color:${C.mu};margin-top:3px;line-height:1.2;}
 .fin-curve{width:100%;margin-bottom:22px;}
 .curve{width:100%;height:70px;display:block;}
+.lite-hidden{display:none !important;}
+.lite-hint{text-align:center;font-size:15px;font-weight:800;color:${C.gn};margin:6px 0 14px;}
+.buy-cta{background:${C.gn};color:#06210F;font-size:17px;padding:19px;box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:buyPulse 1.6s ease-in-out infinite;}
+@keyframes buyPulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55);}70%{box-shadow:0 0 0 16px rgba(34,197,94,0);}100%{box-shadow:0 0 0 0 rgba(34,197,94,0);}}
+.lite-success{border:1px solid ${C.gn}66;background:${C.gn}14;border-radius:12px;padding:16px 15px;margin-bottom:18px;text-align:center;}
+.lite-success-t{font-size:18px;font-weight:800;color:${C.gn};margin-bottom:6px;}
+.lite-success-e{font-size:13px;line-height:1.5;color:#DCEFE2;}
 `;
